@@ -8,7 +8,7 @@ import re
 from datetime import datetime
 import unicodedata
 
-from utils.constants import KEY_MAP
+from ..utils.constants import KEY_MAP
 
 def is_auction_result_link(href):
     """Matchar både nya (auktionsresultat-) och gamla (result-auction-) URL-mönster."""
