@@ -1,4 +1,4 @@
-from src.quickstart_etl.definitions import defs
+from src.markets_data_hub.definitions import defs
 
 
 def test_def_can_load():
