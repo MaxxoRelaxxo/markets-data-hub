@@ -32,7 +32,7 @@ def riksbank_certificate(context: AssetExecutionContext) -> MaterializeResult:
             errors.append({"raw": r, "error": str(e)})
 
     if errors:
-        context.log.warning(f"{len(errors)} poster kunde inte valideras")
+        context.log.warning(f"{len(errors)} records could not be validated.")
         for err in errors[:3]:
             context.log.warning(str(err))
 
@@ -40,7 +40,7 @@ def riksbank_certificate(context: AssetExecutionContext) -> MaterializeResult:
     
     output_path = DATA_DIR / "rb_cert_auctions_result.parquet"
     df.write_parquet(output_path)
-    context.log.info(f"Skrev {len(df)} rader till {output_path}")
+    context.log.info(f"Writing {len(df)} rows to {output_path}")
 
     return MaterializeResult(
         metadata={
