@@ -1,0 +1,6 @@
+[32m2026-02-18 21:39:31 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - d0df376b-ab83-468d-bb0a-c1cd7ae5540e - 17589 - LOGS_CAPTURED - Started capturing logs in process (pid: 17589).
+[32m2026-02-18 21:39:31 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - d0df376b-ab83-468d-bb0a-c1cd7ae5540e - 17589 - sales_of_gov_bonds - STEP_START - Started execution of step "sales_of_gov_bonds".
+[32m2026-02-18 21:41:12 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - d0df376b-ab83-468d-bb0a-c1cd7ae5540e - sales_of_gov_bonds - Writing 230 rows to /workspaces/markets-data-hub/src/markets_data_hub/data/sales_of_government_bonds.parquet
+[32m2026-02-18 21:41:12 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - d0df376b-ab83-468d-bb0a-c1cd7ae5540e - 17589 - sales_of_gov_bonds - STEP_OUTPUT - Yielded output "result" of type "Any". (Type check passed).
+[32m2026-02-18 21:41:12 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - d0df376b-ab83-468d-bb0a-c1cd7ae5540e - 17589 - sales_of_gov_bonds - ASSET_MATERIALIZATION - Materialized value sales_of_gov_bonds.
+[32m2026-02-18 21:41:12 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - d0df376b-ab83-468d-bb0a-c1cd7ae5540e - 17589 - sales_of_gov_bonds - STEP_SUCCESS - Finished execution of step "sales_of_gov_bonds" in 1m41s.

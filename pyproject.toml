@@ -1,13 +1,14 @@
 [project]
-name = "quickstart_etl"
+name = "markets_data_hub"
 requires-python = ">=3.10,<3.15"
 version = "0.1.0"
 dependencies = [
     "dagster",
     "dagster-cloud",
-    "boto3",
-    "pandas",
-    "matplotlib",
+    "requests",
+    "beautifulsoup4",
+    "polars",
+    "pydantic",
 ]
 
 [dependency-groups]
@@ -22,11 +23,11 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.dagster]
-module_name = "quickstart_etl.definitions"
-code_location_name = "quickstart_etl"
+module_name = "markets_data_hub.definitions"
+code_location_name = "markets_data_hub"
 
 [tool.dg]
 directory_type = "project"
 
 [tool.dg.project]
-root_module = "quickstart_etl"
+root_module = "markets_data_hub"

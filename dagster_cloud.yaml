@@ -1,5 +1,5 @@
 locations:
 - code_source:
-    module_name: quickstart_etl.definitions
-  location_name: market_data_hub
+    module_name: markets_data_hub.definitions
+  location_name: markets_data_hub
   working_directory: ./src/
