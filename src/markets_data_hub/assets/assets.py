@@ -1,7 +1,7 @@
 """Assets."""
 
-from ..utils.functions import scrape_rb_cert_auctions, transform_record
-from ..assets.schemas import RbCertAuctionResult
+from ..utils.functions import scrape_rb_cert_auctions, transform_record, scrape_riksbank_auctions, convert_record
+from ..assets.schemas import RbCertAuctionResult, AuctionResult
 
 import polars as pl
 
@@ -39,6 +39,34 @@ def riksbank_certificate(context: AssetExecutionContext) -> MaterializeResult:
     df = pl.DataFrame([v.model_dump() for v in validated])
     
     output_path = DATA_DIR / "rb_cert_auctions_result.parquet"
+    df.write_parquet(output_path)
+    context.log.info(f"Writing {len(df)} rows to {output_path}")
+
+    return MaterializeResult(
+        metadata={
+            "num_records": len(df),
+            "path": str(output_path),
+        }
+    )
+
+
+@asset(group_name="Market_operations")
+def sales_of_gov_bonds(context: AssetExecutionContext) -> MaterializeResult:
+    """Sales_of_gov_bonds.
+    
+    Webscapres auction results from sales of government bonds.
+    """
+    data = scrape_riksbank_auctions()
+    unique_keys = sorted({key for row in data for key in row.keys()})
+
+    results = []
+    for r in data:
+        parsed = convert_record(r)
+        results.append(AuctionResult(**parsed))
+
+    df = pl.DataFrame([item.model_dump() for item in results])
+
+    output_path = DATA_DIR / "sales_of_government_bonds.parquet"
     df.write_parquet(output_path)
     context.log.info(f"Writing {len(df)} rows to {output_path}")
 

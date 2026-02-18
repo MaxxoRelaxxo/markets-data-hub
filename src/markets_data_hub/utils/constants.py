@@ -1,6 +1,6 @@
 """Constants."""
 
-KEY_MAP = {
+KEY_MAP_RB_CERT = {
     "anbudsdag": "Anbudsdag",
     "likviddag": "Likviddag",
     "forfallodag": "Forfallodag",
@@ -34,4 +34,26 @@ KEY_MAP = {
     "accepted_volume": "Tilldelad_volym",
     "isin": "Isin",
     "source_url": "Source_url",
+}
+
+KEY_MAP_GOV = {
+    'Anbudsdag': 'Anbudsdag',
+    'Lån': 'Lan',
+    'Isin': 'Isin',
+    'Kupong': 'Kupong',
+    'Kupong, %': 'Kupong',
+    'Förfallodag': 'Forfallodag',
+    'Erbjuden volym, SEK mn': 'Erbjuden_volym',
+    'Budvolym, SEK mn': 'Budvolym',
+    'Tilldelad volym, SEK mn': 'Tilldelad_volym',
+    'Antal bud': 'Antal_bud',
+    'Antal godkända bud': 'Antal_godkända_bud',
+    'Genomsnittlig ränta': 'Genomsnittlig_ranta',
+    'Genomsnittlig ränta, %': 'Genomsnittlig_ranta',
+    'Lägsta ränta': 'Lagsta_ranta',
+    'Lägsta ränta, %': 'Lagsta_ranta',
+    'Högsta accepterade ränta': 'Hogst_accepterade_ranta',
+    'Högsta accepterade ränta, %': 'Hogst_accepterade_ranta',
+    'Tilldelning till högsta ränta, %': 'Tilldelning_hosta_ranta',
+    'source_url' : 'Source_url'
 }
