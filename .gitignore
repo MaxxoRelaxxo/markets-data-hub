@@ -1,0 +1,12 @@
+# Dagster temporary home directories
+.tmp_dagster_home_*/
+
+# Python packaging artifacts
+*.egg-info/
+*.egg-info
+dist/
+build/
+__pycache__/
+*.pyc
+*.pyo
+.eggs/
