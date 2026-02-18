@@ -1,6 +1,0 @@
-dagster
-dagster-cloud
-requests
-beautifulsoup4
-polars
-pydantic
