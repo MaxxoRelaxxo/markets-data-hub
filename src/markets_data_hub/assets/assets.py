@@ -14,12 +14,12 @@ DATA_DIR.mkdir(exist_ok=True)
 
 @asset(group_name="Market_operations")
 def riksbank_certificate(context: AssetExecutionContext) -> MaterializeResult:
-    """Riksbank certertificates.
-    
-    Webscapres auction results from Riksbank certertificates.
+    """Riksbank certificates.
+
+    Webscrapes auction results from Riksbank certificates.
     """
-    data = scrape_rb_cert_auctions(limit=0)
-    
+    data = scrape_rb_cert_auctions(limit=None)
+
     validated = []
     errors = []
     for r in data:
@@ -37,7 +37,7 @@ def riksbank_certificate(context: AssetExecutionContext) -> MaterializeResult:
             context.log.warning(str(err))
 
     df = pl.DataFrame([v.model_dump() for v in validated])
-    
+
     output_path = DATA_DIR / "rb_cert_auctions_result.parquet"
     df.write_parquet(output_path)
     context.log.info(f"Writing {len(df)} rows to {output_path}")
@@ -52,19 +52,27 @@ def riksbank_certificate(context: AssetExecutionContext) -> MaterializeResult:
 
 @asset(group_name="Market_operations")
 def sales_of_gov_bonds(context: AssetExecutionContext) -> MaterializeResult:
-    """Sales_of_gov_bonds.
-    
-    Webscapres auction results from sales of government bonds.
+    """Sales of government bonds.
+
+    Webscrapes auction results from sales of government bonds.
     """
     data = scrape_riksbank_auctions()
-    unique_keys = sorted({key for row in data for key in row.keys()})
 
-    results = []
+    validated = []
+    errors = []
     for r in data:
-        parsed = convert_record(r)
-        results.append(AuctionResult(**parsed))
+        try:
+            parsed = convert_record(r)
+            validated.append(AuctionResult(**parsed))
+        except Exception as e:
+            errors.append({"raw": r, "error": str(e)})
 
-    df = pl.DataFrame([item.model_dump() for item in results])
+    if errors:
+        context.log.warning(f"{len(errors)} records could not be validated.")
+        for err in errors[:3]:
+            context.log.warning(str(err))
+
+    df = pl.DataFrame([item.model_dump() for item in validated])
 
     output_path = DATA_DIR / "sales_of_government_bonds.parquet"
     df.write_parquet(output_path)

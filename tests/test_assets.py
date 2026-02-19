@@ -112,4 +112,4 @@ class TestRiksbankCertificateAsset:
             context = build_asset_context()
             riksbank_certificate(context)
 
-        mock_scrape.assert_called_once_with(limit=0)
+        mock_scrape.assert_called_once_with(limit=None)
