@@ -9,6 +9,8 @@ dependencies = [
     "beautifulsoup4",
     "polars",
     "pydantic",
+    "marimo",
+    "altair>=6.0.0",
 ]
 
 [dependency-groups]
