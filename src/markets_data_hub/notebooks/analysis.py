@@ -22,7 +22,8 @@ def _():
 @app.cell
 def _():
     rb_cert = "src/markets_data_hub/data/rb_cert_auctions_result.parquet"
-    return (rb_cert,)
+    rb_gov = "src/markets_data_hub/data/sales_of_government_bonds.parquet"
+    return rb_cert, rb_gov
 
 
 @app.cell
@@ -41,6 +42,14 @@ def _(pl, rb_cert):
         )
     )
     return (df_cert,)
+
+
+@app.cell
+def _(pl, rb_gov):
+    df_gov = (
+        pl.read_parquet(rb_gov)
+    )
+    return
 
 
 @app.cell
