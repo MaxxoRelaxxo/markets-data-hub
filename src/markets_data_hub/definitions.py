@@ -17,21 +17,31 @@ from .assets.assets import (
     get_swestr_values
 )
 
-riksbank_certificate_schedule = ScheduleDefinition(
-    name="riksbank_certificate_weekly",
-    target=AssetSelection.assets(riksbank_certificate),
-    cron_schedule="40 10 * * 2",  # Every Tuesday at 10:40
+riksbank_certificate_job = define_asset_job(
+    name="riksbank_certificate_job",
+    selection=AssetSelection.assets(riksbank_certificate),
 )
 
-sales_of_gov_bonds_schedule = ScheduleDefinition(
-    name="sales_of_gov_bonds_weekly",
-    target=AssetSelection.assets(sales_of_gov_bonds),
-    cron_schedule="40 10 * * 5",  # Every Friday at 10:40
+sales_of_gov_bonds_job = define_asset_job(
+    name="sales_of_gov_bonds_job",
+    selection=AssetSelection.assets(sales_of_gov_bonds),
 )
 
 swestr_job = define_asset_job(
     name="swestr_job",
     selection=AssetSelection.assets(get_swestr_values),
+)
+
+riksbank_certificate_schedule = ScheduleDefinition(
+    name="riksbank_certificate_weekly",
+    target=riksbank_certificate_job,
+    cron_schedule="40 10 * * 2",  # Every Tuesday at 10:40
+)
+
+sales_of_gov_bonds_schedule = ScheduleDefinition(
+    name="sales_of_gov_bonds_weekly",
+    target=sales_of_gov_bonds_job,
+    cron_schedule="40 10 * * 5",  # Every Friday at 10:40
 )
 
 swestr_schedule = ScheduleDefinition(
@@ -46,7 +56,7 @@ defs = Definitions(
         sales_of_gov_bonds,
         get_swestr_values
     ],
-    jobs=[swestr_job],
+    jobs=[riksbank_certificate_job, sales_of_gov_bonds_job, swestr_job],
     schedules=[
         riksbank_certificate_schedule,
         sales_of_gov_bonds_schedule,
