@@ -16,6 +16,10 @@ def _():
     from pathlib import Path
     from datetime import date, datetime
 
+    def setup_altair():
+        alt.renderers.set_embed_options(actions=False)
+
+    setup_altair()
     return alt, date, datetime, mo, pl
 
 
@@ -23,7 +27,8 @@ def _():
 def _():
     rb_cert = "src/markets_data_hub/data/rb_cert_auctions_result.parquet"
     rb_gov = "src/markets_data_hub/data/sales_of_government_bonds.parquet"
-    return rb_cert, rb_gov
+    ref_rgk = "src/markets_data_hub/data/ref_rgk.xlsx"
+    return rb_cert, rb_gov, ref_rgk
 
 
 @app.cell
@@ -45,11 +50,49 @@ def _(pl, rb_cert):
 
 
 @app.cell
-def _(pl, rb_gov):
+def _(pl, rb_gov, ref_rgk):
+    cols = [
+      "Instrument/Marknad",
+      "Värdepapper",
+      "ISIN",
+      "ISIN US",
+      "Utgivnings-dag",
+      "Valuta",
+      "Kupong-ränta",
+      "Kupong-frekvens",
+      "Kupong från",
+      "BasKPI",
+      "Dagkon-vention",
+      "Kupong-typ"
+    ]
+
+    ref_rgk_df = pl.read_excel(ref_rgk, columns=cols)
+
     df_gov = (
         pl.read_parquet(rb_gov)
+        .join(ref_rgk_df, left_on="Isin", right_on="ISIN")
+        .sort("Anbudsdag", "Isin")
+        .with_columns([
+            # Extrahera datumkomponenter
+            pl.col("Anbudsdag").dt.year().alias("_y1"),
+            pl.col("Anbudsdag").dt.month().alias("_m1"),
+            pl.col("Anbudsdag").dt.day().alias("_d1"),
+            pl.col("Forfallodag").cast(pl.Date).dt.year().alias("_y2"),
+            pl.col("Forfallodag").cast(pl.Date).dt.month().alias("_m2"),
+            pl.col("Forfallodag").cast(pl.Date).dt.day().alias("_d2"),
+        ]).with_columns([
+            (
+                (pl.col("_y2") - pl.col("_y1")) * 360
+                + (pl.col("_m2") - pl.col("_m1")) * 30
+                + pl.min_horizontal(pl.col("_d2"), pl.lit(30))
+                - pl.min_horizontal(pl.col("_d1"), pl.lit(30))
+            ).alias("_dagar_30e360")
+        ]).with_columns([
+            (pl.col("_dagar_30e360") / 360).alias("Aterstaende_lopetid_ar")
+        ]).drop(["_y1", "_m1", "_d1", "_y2", "_m2", "_d2", "_dagar_30e360"])
     )
-    return
+    df_gov
+    return (df_gov,)
 
 
 @app.cell
@@ -238,10 +281,181 @@ def _(alt, date, df_cert, mo, pl):
         cert_plot,
         mo.Html("""
             <div style="font-size:11px; color:gray; text-align:left; padding: 4px 0 0 60px;">
-                Anmärkning: Grafen omfattar ej återförsäljning av riksbankscertifikat eller finjusterade transaktioner. Den återstående likviditeten kan därför avvika från vad som framgår av grafen.<br>
+                Anmärkning: Grafen omfattar ej återförsäljning av riksbankscertifikat eller finjusterade transaktioner. Likviditetsställningen mot banksystemet kan därför avvika från vad som framgår av grafen.<br>
                 Källa: Riksbanken.
             </div>
         """)
+    ])
+    return
+
+
+@app.cell
+def _(alt, df_gov, mo, pl):
+    # ── Auktionsyield över tid – SGB ─────────────────────────────────────────────
+    sgb_df = df_gov.filter(pl.col("Instrument/Marknad") == "SGB")
+    sgb_domain = sorted(sgb_df["Värdepapper"].unique().to_list())
+    sgb_range = ["#0071B9", "#B91E2B", "#f4a700", "#2ca02c", "#9467bd", "#8c564b"]
+
+    yield_chart_sgb = (
+        alt.Chart(sgb_df)
+        .mark_line(point=True, opacity=0.8)
+        .encode(
+            x=alt.X(
+                "Anbudsdag:T",
+                axis=alt.Axis(title="", format="%Y", tickCount="year"),
+            ),
+            y=alt.Y(
+                "Genomsnittlig_ranta:Q",
+                axis=alt.Axis(title="Auktionsyield (%)"),
+                scale=alt.Scale(zero=False),
+            ),
+            color=alt.Color(
+                "Värdepapper:N",
+                scale=alt.Scale(domain=sgb_domain, range=sgb_range[: len(sgb_domain)]),
+                legend=alt.Legend(orient="bottom", title=None),
+            ),
+            tooltip=[
+                alt.Tooltip("Anbudsdag:T", title="Datum"),
+                alt.Tooltip("Värdepapper:N", title="Obligation"),
+                alt.Tooltip("Genomsnittlig_ranta:Q", title="Yield (%)", format=".3f"),
+                alt.Tooltip("Aterstaende_lopetid_ar:Q", title="Löptid (år)", format=".2f"),
+            ],
+        )
+        .properties(
+            title=alt.Title(text="SGB – Auktionsyield (YTM) över tid", fontSize=16),
+            width="container",
+            height=400,
+        )
+        .configure_legend(columns=3, symbolType="stroke", symbolSize=100)
+        .interactive()
+    )
+
+    # ── Auktionsyield över tid – SGB IL ──────────────────────────────────────────
+    sgb_il_df = df_gov.filter(pl.col("Instrument/Marknad") == "SGB IL")
+    sgb_il_domain = sorted(sgb_il_df["Värdepapper"].unique().to_list())
+
+    yield_chart_sgb_il = (
+        alt.Chart(sgb_il_df)
+        .mark_line(point=True, opacity=0.8)
+        .encode(
+            x=alt.X(
+                "Anbudsdag:T",
+                axis=alt.Axis(title="", format="%Y", tickCount="year"),
+            ),
+            y=alt.Y(
+                "Genomsnittlig_ranta:Q",
+                axis=alt.Axis(title="Realränta (%)"),
+                scale=alt.Scale(zero=False),
+            ),
+            color=alt.Color(
+                "Värdepapper:N",
+                scale=alt.Scale(domain=sgb_il_domain, range=sgb_range[: len(sgb_il_domain)]),
+                legend=alt.Legend(orient="bottom", title=None),
+            ),
+            tooltip=[
+                alt.Tooltip("Anbudsdag:T", title="Datum"),
+                alt.Tooltip("Värdepapper:N", title="Obligation"),
+                alt.Tooltip("Genomsnittlig_ranta:Q", title="Realränta (%)", format=".3f"),
+                alt.Tooltip("Aterstaende_lopetid_ar:Q", title="Löptid (år)", format=".2f"),
+            ],
+        )
+        .properties(
+            title=alt.Title(text="SGB IL – Auktionsyield (realränta) över tid", fontSize=16),
+            width="container",
+            height=400,
+        )
+        .configure_legend(columns=3, symbolType="stroke", symbolSize=100)
+        .interactive()
+    )
+
+    # ── Bid-to-cover – SGB ───────────────────────────────────────────────────────
+    btc_sgb_chart = (
+        alt.Chart(sgb_df)
+        .mark_bar(opacity=0.7)
+        .encode(
+            x=alt.X(
+                "Anbudsdag:T",
+                axis=alt.Axis(title="", format="%Y", tickCount="year"),
+            ),
+            y=alt.Y(
+                "Bid_to_cover:Q",
+                axis=alt.Axis(title="Bid-to-cover"),
+            ),
+            color=alt.Color(
+                "Värdepapper:N",
+                scale=alt.Scale(domain=sgb_domain, range=sgb_range[: len(sgb_domain)]),
+                legend=alt.Legend(orient="bottom", title=None),
+            ),
+            tooltip=[
+                alt.Tooltip("Anbudsdag:T", title="Datum"),
+                alt.Tooltip("Värdepapper:N", title="Obligation"),
+                alt.Tooltip("Bid_to_cover:Q", title="Bid-to-cover", format=".2f"),
+                alt.Tooltip("Budvolym:Q", title="Budvolym (Mkr)"),
+                alt.Tooltip("Tilldelad_volym:Q", title="Tilldelad (Mkr)"),
+            ],
+        )
+        .properties(
+            title=alt.Title(text="SGB – Bid-to-cover per auktion", fontSize=16),
+            width="container",
+            height=400,
+        )
+        .configure_legend(columns=3, symbolType="square", symbolSize=100)
+        .interactive()
+    )
+
+    # ── Bid-to-cover – SGB IL ────────────────────────────────────────────────────
+    btc_sgb_il_chart = (
+        alt.Chart(sgb_il_df)
+        .mark_bar(opacity=0.7)
+        .encode(
+            x=alt.X(
+                "Anbudsdag:T",
+                axis=alt.Axis(title="", format="%Y", tickCount="year"),
+            ),
+            y=alt.Y(
+                "Bid_to_cover:Q",
+                axis=alt.Axis(title="Bid-to-cover"),
+            ),
+            color=alt.Color(
+                "Värdepapper:N",
+                scale=alt.Scale(domain=sgb_il_domain, range=sgb_range[: len(sgb_il_domain)]),
+                legend=alt.Legend(orient="bottom", title=None),
+            ),
+            tooltip=[
+                alt.Tooltip("Anbudsdag:T", title="Datum"),
+                alt.Tooltip("Värdepapper:N", title="Obligation"),
+                alt.Tooltip("Bid_to_cover:Q", title="Bid-to-cover", format=".2f"),
+                alt.Tooltip("Budvolym:Q", title="Budvolym (Mkr)"),
+                alt.Tooltip("Tilldelad_volym:Q", title="Tilldelad (Mkr)"),
+            ],
+        )
+        .properties(
+            title=alt.Title(text="SGB IL – Bid-to-cover per auktion", fontSize=16),
+            width="container",
+            height=400,
+        )
+        .configure_legend(columns=3, symbolType="square", symbolSize=100)
+        .interactive()
+    )
+
+    # ── Rendera ───────────────────────────────────────────────────────────────────
+    source_note = mo.Html("""
+        <div style="font-size:11px; color:gray; text-align:left; padding: 4px 0 0 60px;">
+            Anmärkning: Misslyckade auktioner (tilldelad volym = 0) är exkluderade.
+            Yield avser genomsnittlig yield-to-maturity vid auktionsdagen, ej kupongränta.<br>
+            Källa: Riksbanken/Riksgälden.
+        </div>
+    """)
+
+    mo.vstack([
+        yield_chart_sgb,
+        source_note,
+        yield_chart_sgb_il,
+        source_note,
+        btc_sgb_chart,
+        source_note,
+        btc_sgb_il_chart,
+        source_note,
     ])
     return
 
