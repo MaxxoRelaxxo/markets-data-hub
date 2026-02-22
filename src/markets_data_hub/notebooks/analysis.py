@@ -87,7 +87,7 @@ def _(datetime, mo):
                 <div class="two-col" style="padding-top: 16px; padding-bottom: 16px;">
                     <div>
                         <h1 style="margin:0; font-size:4.1rem; font-weight:700; line-height:1.1;">
-                            Marknadsoperationer
+                            Rubrik?
                         </h1>
                         <div style="margin-top:6px; font-size:1rem; color:#666;">
                             {datum_text}
@@ -106,7 +106,15 @@ def _(datetime, mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    # Resultat från senaste auktion av Riksbankscertifikat
+    # Marknadsoperationer
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Resultat från senaste auktion av Riksbankscertifikat
     """)
     return
 
@@ -248,7 +256,7 @@ def _(alt, date, df_cert, mo, pl):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    # Försäljning av Statsobligationer
+    ## Försäljning av Statsobligationer
     """)
     return
 
@@ -410,7 +418,15 @@ def _(alt, color_range, mo, sgb_il_df, sgb_il_domain, source_note):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    # Swestr
+    # Kort penningmarknad
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Swestr senaste notering
     """)
     return
 
@@ -437,7 +453,7 @@ def _(pl, policy_rate, swestr):
             "value" : "policy_rate"
         })
         .with_columns(
-            (pl.col.policy_rate - pl.col.rate).alias("diff_swestr")
+            (pl.col.rate - pl.col.policy_rate).alias("diff_swestr")
         )
     )
     return (df_swestr,)
@@ -456,6 +472,14 @@ def _(df_swestr, mo):
         swestr_card(mo.stat(value=str(swestr_row['numberOfTransactions']), label="Antal transaktioner", bordered=True)),
         swestr_card(mo.stat(value=str(swestr_row['numberOfAgents']), label="Antal rapportörer", bordered=True)),
     ])
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Swestrs utveckling senaste månaden
+    """)
     return
 
 
@@ -505,7 +529,7 @@ def _(alt, df_swestr, mo, pl):
             chart,
             mo.Html("""
                 <div style="font-size:11px; color:gray; text-align:left; padding: 4px 0 0 0px;">
-                    Lådan visar spridningen mellan nedre/övre trimningsgräns och Swestr per dag.<br>
+                    Lådan visar spridningen mellan nedre/övre trimningsgräns och Swestrnoteringen per dag.<br>
                     Källa: Riksbanken.
                 </div>
             """),
@@ -515,50 +539,115 @@ def _(alt, df_swestr, mo, pl):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Swestr över tid
+    """)
+    return
+
+
 @app.cell
-def _(alt, df_swestr, mo):
+def _(alt, df_swestr, mo, pl):
     def swestr_band():
-        chart = alt.layer(
-            # Band mellan percentilerna
-            alt.Chart(df_swestr).mark_area(opacity=0.2, color="#0071B9").encode(
+        # Smält om till långt format för legend
+        df_long = df_swestr.select(["date", "rate", "policy_rate"]).unpivot(
+            index="date",
+            on=["rate", "policy_rate"],
+            variable_name="serie",
+            value_name="värde",
+        ).with_columns(
+            pl.col("serie").replace({"rate": "SWESTR", "policy_rate": "Styrränta"})
+        )
+
+        _domain = ["SWESTR", "Styrränta"]
+        _colors = ["#0071B9", "#B91E2B"]
+        _dash = [[1, 0], [4, 2]]
+
+        lines = (
+            alt.Chart(df_long)
+            .mark_line(strokeWidth=1.5)
+            .encode(
                 x=alt.X("date:T", axis=alt.Axis(title="", format="%Y", tickCount="year")),
-                y=alt.Y("pctl12_5:Q", scale=alt.Scale(zero=False), axis=alt.Axis(title="Ränta (%)")),
-                y2=alt.Y2("pctl87_5:Q"),
-            ),
-            # SWESTR-räntan
-            alt.Chart(df_swestr).mark_line(color="#0071B9", strokeWidth=1.5).encode(
-                x=alt.X("date:T"),
-                y=alt.Y("rate:Q"),
+                y=alt.Y("värde:Q", scale=alt.Scale(zero=False), axis=alt.Axis(title="Ränta (%)")),
+                color=alt.Color(
+                    "serie:N",
+                    scale=alt.Scale(domain=_domain, range=_colors),
+                    legend=alt.Legend(orient="bottom", title=None),
+                ),
+                strokeDash=alt.StrokeDash(
+                    "serie:N",
+                    scale=alt.Scale(domain=_domain, range=_dash),
+                    legend=None,
+                ),
                 tooltip=[
                     alt.Tooltip("date:T", title="Datum"),
-                    alt.Tooltip("rate:Q", title="SWESTR (%)", format=".3f"),
-                    alt.Tooltip("pctl12_5:Q", title="Nedre gräns (%)", format=".3f"),
-                    alt.Tooltip("pctl87_5:Q", title="Övre gräns (%)", format=".3f"),
+                    alt.Tooltip("serie:N", title="Serie"),
+                    alt.Tooltip("värde:Q", title="Ränta (%)", format=".3f"),
                 ],
-            ),
-        ).properties(
-            title=alt.Title(text="SWESTR med trimningsgränser", fontSize=16),
-            width="container",
-            height=400,
-        ).interactive()
+            )
+        )
+
+        spread = (
+            alt.Chart(df_swestr)
+            .mark_area(opacity=0.15, color="#f4a700")
+            .encode(
+                x=alt.X("date:T"),
+                y=alt.Y("rate:Q"),
+                y2=alt.Y2("policy_rate:Q"),
+            )
+        )
+
+        chart_rates = (
+            alt.layer(spread, lines)
+            .properties(
+                title=alt.Title(text="Styrränta vs Swestr", fontSize=16),
+                width="container",
+                height=300,
+            )
+            .configure_legend(columns=2, symbolType="stroke", symbolSize=100)
+        )
+
+        diff_line = (
+            alt.Chart(df_swestr)
+            .mark_line(color="#f4a700", strokeWidth=1.5)
+            .encode(
+                x=alt.X("date:T", axis=alt.Axis(title="", format="%Y", tickCount="year")),
+                y=alt.Y("diff_swestr:Q", axis=alt.Axis(title="Diff (%)")),
+                tooltip=[
+                    alt.Tooltip("date:T", title="Datum"),
+                    alt.Tooltip("diff_swestr:Q", title="Diff Styrränta - Swestr", format=".4f"),
+                ],
+            )
+        )
+
+        diff_zero = (
+            alt.Chart(df_swestr)
+            .mark_rule(color="#475569", strokeDash=[2, 2])
+            .encode(y=alt.datum(0))
+        )
+
+        chart_diff = (
+            alt.layer(diff_zero, diff_line)
+            .properties(
+                title=alt.Title(text="Avvikelse från styrräntan", fontSize=16),
+                width="container",
+                height=200,
+            )
+        )
 
         return mo.vstack([
-            chart,
+            chart_rates,
+            chart_diff,
             mo.Html("""
                 <div style="font-size:11px; color:gray; text-align:left; padding: 4px 0 0 0px;">
-                    Bandet visar spridningen mellan nedre (12,5%) och övre (87,5%) trimningsgräns.<br>
+                    Gula fältet visar spreaden mellan styrränta och Swestr. Swestr noteringen för sista december är ej med i grafen.<br>
                     Källa: Riksbanken.
                 </div>
             """),
         ])
 
     swestr_band()
-    return
-
-
-@app.cell
-def _(df_swestr):
-    df_swestr.columns
     return
 
 
