@@ -87,7 +87,7 @@ def _(datetime, mo):
                 <div class="two-col" style="padding-top: 16px; padding-bottom: 16px;">
                     <div>
                         <h1 style="margin:0; font-size:4.1rem; font-weight:700; line-height:1.1;">
-                            Rubrik?
+                            Marknadsdata
                         </h1>
                         <div style="margin-top:6px; font-size:1rem; color:#666;">
                             {datum_text}
@@ -641,7 +641,7 @@ def _(alt, df_swestr, mo, pl):
             chart_diff,
             mo.Html("""
                 <div style="font-size:11px; color:gray; text-align:left; padding: 4px 0 0 0px;">
-                    Gula fältet visar spreaden mellan styrränta och Swestr. Swestr noteringen för sista december är ej med i grafen.<br>
+                    Gula fältet visar spreaden mellan styrränta och Swestr. Swestr noteringen för sista december är exkluderad.<br>
                     Källa: Riksbanken.
                 </div>
             """),
