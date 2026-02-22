@@ -419,6 +419,22 @@ def _(pl, swestr):
     df_swestr = (
         pl.read_parquet(swestr)
     )
+    return (df_swestr,)
+
+
+@app.cell
+def _(df_swestr, mo):
+    swestr_row = df_swestr.sort("date").tail(1).row(0, named=True)
+
+    def swestr_card(stat):
+        return mo.Html(f'<div style="flex:1">{stat.text}</div>')
+
+    mo.hstack([
+        swestr_card(mo.stat(value=f"{swestr_row['rate']:.3f} %", label="SWESTR", bordered=True)),
+        swestr_card(mo.stat(value=f"{swestr_row['volume']:,.0f} MSEK", label="Volym", bordered=True)),
+        swestr_card(mo.stat(value=str(swestr_row['numberOfTransactions']), label="Antal transaktioner", bordered=True)),
+        swestr_card(mo.stat(value=str(swestr_row['numberOfAgents']), label="Antal rapportörer", bordered=True)),
+    ])
     return
 
 

@@ -5,45 +5,6 @@
   },
   "cells": [
     {
-      "id": "bkHC",
-      "code_hash": "1f52ff326702efeabdfecfc3773b018d",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"resultat-fran-senaste-auktion-av-riksbankscertifikat\">Resultat fr\u00e5n senaste auktion av Riksbankscertifikat</h1></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "SFPL",
-      "code_hash": "ef76f905ff17f3ec8ae3a33787518b17",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"forsaljning-av-statsobligationer\">F\u00f6rs\u00e4ljning av Statsobligationer</h1></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "emfo",
-      "code_hash": "8a74b222cb891e5ef0d772cc938d73b8",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"swestr\">Swestr</h1></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
       "id": "Hbol",
       "code_hash": "6d717974fc8ca264653f5147113ae9bf",
       "outputs": [
@@ -77,6 +38,19 @@
           "type": "data",
           "data": {
             "text/html": "\n    <style>\n        .page {\n            width: 100%;\n            font-family: 'Calibri', sans-serif;\n        }\n        .two-col {\n            display: grid;\n            grid-template-columns: 1fr 220px;\n            column-gap: 24px;\n            align-items: center;\n        }\n        .logo {\n            justify-self: end;\n            height: 200px;\n            max-width: 100%;\n            object-fit: contain;\n        }\n        .meta-bg {\n            background: #F2F2F2;\n            box-shadow: 0 1px 3px rgba(0,0,0,0.1);\n            margin-top: 30px;\n        }\n        .meta-inner {\n            padding: 16px 0;\n        }\n        .meta-cols {\n            display: grid;\n            grid-template-columns: 1fr 220px;\n            column-gap: 24px;\n            align-items: start;\n        }\n        .meta-right {\n            text-align: right;\n        }\n    </style>\n    <div class=\"page\">\n        <div style=\"background: white;\">\n            <div class=\"two-col\" style=\"padding-top: 16px; padding-bottom: 16px;\">\n                <div>\n                    <h1 style=\"margin:0; font-size:4.1rem; font-weight:700; line-height:1.1;\">\n                        Marknadsoperationer\n                    </h1>\n                    <div style=\"margin-top:6px; font-size:1rem; color:#666;\">\n                        Vecka 8 - 2026\n                    </div>\n                </div>\n            </div>\n        </div>\n        <div style=\"height: 30px;\"></div>\n    </div>\n    "
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "1f52ff326702efeabdfecfc3773b018d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"resultat-fran-senaste-auktion-av-riksbankscertifikat\">Resultat fr\u00e5n senaste auktion av Riksbankscertifikat</h1></span>"
           }
         }
       ],
@@ -122,6 +96,19 @@
       "console": []
     },
     {
+      "id": "SFPL",
+      "code_hash": "ef76f905ff17f3ec8ae3a33787518b17",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"forsaljning-av-statsobligationer\">F\u00f6rs\u00e4ljning av Statsobligationer</h1></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
       "id": "BYtC",
       "code_hash": "f763ecd853f9f234600e9c451dcc0bd4",
       "outputs": [
@@ -161,6 +148,19 @@
       "console": []
     },
     {
+      "id": "emfo",
+      "code_hash": "8a74b222cb891e5ef0d772cc938d73b8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"swestr\">Swestr</h1></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
       "id": "Hstk",
       "code_hash": "95125e615f6f2f2bf6f21097dfd431c6",
       "outputs": [
@@ -168,6 +168,19 @@
           "type": "data",
           "data": {
             "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xARM",
+      "code_hash": "5853423449a168f58950fe197ef76112",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: space-between;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><div style=\"flex:1\"><marimo-stat data-value='&quot;1.622 %&quot;' data-label='&quot;SWESTR&quot;' data-bordered='true' data-target_direction='&quot;increase&quot;'></marimo-stat></div><div style=\"flex:1\"><marimo-stat data-value='&quot;57,115 MSEK&quot;' data-label='&quot;Volym&quot;' data-bordered='true' data-target_direction='&quot;increase&quot;'></marimo-stat></div><div style=\"flex:1\"><marimo-stat data-value='&quot;237&quot;' data-label='&quot;Antal transaktioner&quot;' data-bordered='true' data-target_direction='&quot;increase&quot;'></marimo-stat></div><div style=\"flex:1\"><marimo-stat data-value='&quot;5&quot;' data-label='&quot;Antal rapport\u00f6rer&quot;' data-bordered='true' data-target_direction='&quot;increase&quot;'></marimo-stat></div></div>"
           }
         }
       ],
