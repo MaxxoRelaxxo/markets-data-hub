@@ -5,12 +5,14 @@ from ..utils.functions import (
     transform_record, 
     scrape_riksbank_auctions, 
     convert_record, 
-    SwestrApiResource
+    SwestrApiResource,
+    SweaApiResource
 )
 from ..assets.schemas import (
     RbCertAuctionResult,
     AuctionResult,
-    SwestrResult
+    SwestrResult,
+    PolicyRateResult
 )
 
 from dagster import AssetExecutionContext, MaterializeResult, asset
@@ -126,6 +128,33 @@ def get_swestr_values(context: AssetExecutionContext, swestr_api: SwestrApiResou
     )
     
     output_path = DATA_DIR / "swestr_values.parquet"
+    df.write_parquet(output_path)
+    context.log.info(f"Writing {len(df)} rows to {output_path}")
+
+    return MaterializeResult(
+        metadata={
+            "num_records": len(df),
+            "path": str(output_path),
+        }
+    )
+
+
+@asset(group_name="Market_operations")
+def get_policy_rate_values(context: AssetExecutionContext, swea_api: SweaApiResource) -> MaterializeResult:
+    """Get policy rate values.
+
+    Collect policy rate values values from Swea API.
+    """
+    result = swea_api.get_swea_series(
+        series_id="SECBREPOEFF",
+        from_date="1994-06-01",
+    )
+    
+    validated = [PolicyRateResult(**row) for row in result]
+    
+    df = pl.DataFrame([r.model_dump() for r in validated])
+    
+    output_path = DATA_DIR / "policy_rate_values.parquet"
     df.write_parquet(output_path)
     context.log.info(f"Writing {len(df)} rows to {output_path}")
 

@@ -333,3 +333,34 @@ class SwestrApiResource(ConfigurableResource):
         response.raise_for_status()
 
         return response.json()
+
+
+### Swea API
+
+class SweaApiResource(ConfigurableResource):
+    """Swea API resource."""
+
+    api_key: str
+
+    def get_swea_series(
+        self, series_id: str, from_date: str
+    ) -> list[dict[str, Any]]:
+        """Define function to get swea api observations.
+
+        The function takes the code for observations in the
+        Swea API and the date from when you want to collect them
+        as input.
+        """
+        base_url = "https://api.riksbank.se/swea/v1/Observations/"
+
+        api_url = f"{base_url}/{series_id}/{from_date}"
+
+        headers = {
+            "Cache-Control": "no-cache",
+            "Ocp-Apim-Subscription-Key": self.api_key,
+        }
+
+        response = requests.get(api_url, timeout=10, headers=headers)
+        response.raise_for_status()
+
+        return response.json()
