@@ -5,6 +5,7 @@ from dagster import (
     EnvVar,
     Definitions,
     ScheduleDefinition,
+    define_asset_job,
 )
 from markets_data_hub.utils.functions import SwestrApiResource
 
@@ -28,15 +29,28 @@ sales_of_gov_bonds_schedule = ScheduleDefinition(
     cron_schedule="40 10 * * 5",  # Every Friday at 10:40
 )
 
+swestr_job = define_asset_job(
+    name="swestr_job",
+    selection=AssetSelection.assets(get_swestr_values),
+)
+
+swestr_schedule = ScheduleDefinition(
+    name="swestr_weekday",
+    target=swestr_job,
+    cron_schedule="5 9 * * 1-5",  # Every weekday at 09:05
+)
+
 defs = Definitions(
     assets=[
         riksbank_certificate,
         sales_of_gov_bonds,
         get_swestr_values
     ],
+    jobs=[swestr_job],
     schedules=[
         riksbank_certificate_schedule,
         sales_of_gov_bonds_schedule,
+        swestr_schedule,
     ],
     resources={"swestr_api": swestr_resource},
 )
