@@ -1,40 +1,40 @@
 # Markets Data Hub
 
-Datapipeline som samlar in, validerar och visualiserar svensk finansmarknadsdata. Byggt med [Dagster](https://dagster.io/) och driftas på Dagster Cloud Serverless.
+Data pipeline that collects, validates, and visualizes Swedish financial market data. Built with [Dagster](https://dagster.io/) and hosted on Dagster Cloud Serverless.
 
-## Datakällor och assets
+## Data sources and assets
 
-Projektet innehåller fyra assets i gruppen **Market_operations**:
+The project contains four assets in the **Market_operations** group:
 
-| Asset | Beskrivning | Källa | Schema |
+| Asset | Description | Source | Schedule |
 |---|---|---|---|
-| `riksbank_certificate` | Auktionsresultat för Riksbankscertifikat (erbjuden/tilldelad volym, ränta, ISIN m.m.) | Webscraping av Riksbankens sida | Tisdagar 10:40 UTC |
-| `sales_of_gov_bonds` | Auktionsresultat för statsobligationer (SGB) och reala statsobligationer (SGB IL) | Webscraping av Riksbankens sida | Fredagar 10:40 UTC |
-| `get_swestr_values` | SWESTR-noteringar (ränta, percentilspridning, volym, antal transaktioner) | Riksbankens SWESTR-API | Vardagar 09:05 UTC |
-| `get_policy_rate_values` | Riksbankens styrränta (SECBREPOEFF-serien) | Riksbankens SWEA-API | Vardagar 09:05 UTC |
+| `riksbank_certificate` | Auction results for Riksbank certificates (offered/allocated volume, interest rate, ISIN, etc.) | Web scraping of the Riksbank website | Tuesdays 10:40 UTC |
+| `sales_of_gov_bonds` | Auction results for government bonds (SGB) and inflation-linked government bonds (SGB IL) | Web scraping of the Riksbank website | Fridays 10:40 UTC |
+| `get_swestr_values` | SWESTR rates (interest rate, percentile spread, volume, number of transactions) | Riksbank SWESTR API | Weekdays 09:05 UTC |
+| `get_policy_rate_values` | Riksbank policy rate (SECBREPOEFF series) | Riksbank SWEA API | Weekdays 09:05 UTC |
 
-All data valideras med Pydantic-scheman, transformeras med Polars och lagras som Parquet-filer.
+All data is validated with Pydantic schemas, transformed with Polars, and stored as Parquet files.
 
-## Interaktiv analys
+## Interactive analysis
 
-En [Marimo](https://marimo.io/)-notebook (`src/markets_data_hub/notebooks/analysis.py`) visualiserar insamlad data:
+A [Marimo](https://marimo.io/) notebook (`src/markets_data_hub/notebooks/analysis.py`) visualizes the collected data:
 
-- **Riksbankscertifikat** -- nyckeltal för senaste auktionen, likviditetsöverskott över tid
-- **Statsobligationer** -- bid-to-cover per auktion för SGB och SGB IL
-- **Kort penningmarknad** -- aktuell SWESTR-notering, spridningsboxplottar, SWESTR vs styrränta över tid
+- **Riksbank certificates** -- key metrics from the latest auction, liquidity surplus over time
+- **Government bonds** -- bid-to-cover ratio per auction for SGB and SGB IL
+- **Short-term money market** -- current SWESTR rate, spread box plots, SWESTR vs policy rate over time
 
-Starta notebooken med:
+Run the notebook with:
 
 ```bash
 marimo run src/markets_data_hub/notebooks/analysis.py
 ```
 
-## Kom igång
+## Getting started
 
-### Förutsättningar
+### Prerequisites
 
 - Python >= 3.10, < 3.15
-- En API-nyckel från Riksbanken (för SWESTR- och SWEA-API:erna)
+- A Riksbank API key (for the SWESTR and SWEA APIs)
 
 ### Installation
 
@@ -42,57 +42,57 @@ marimo run src/markets_data_hub/notebooks/analysis.py
 pip install -e ".[dev]"
 ```
 
-### Miljövariabler
+### Environment variables
 
-| Variabel | Beskrivning |
+| Variable | Description |
 |---|---|
-| `RIKSBANK_API_KEY` | API-nyckel för Riksbankens SWESTR- och SWEA-API:er |
+| `RIKSBANK_API_KEY` | API key for the Riksbank SWESTR and SWEA APIs |
 
-### Starta Dagster lokalt
+### Running Dagster locally
 
 ```bash
 dagster dev
 ```
 
-Öppna http://localhost:3000 i webbläsaren.
+Open http://localhost:3000 in your browser.
 
-## Tester
+## Tests
 
 ```bash
 pytest tests
 ```
 
-## Teknikstack
+## Tech stack
 
-- **Dagster** -- orkestrering och schemaläggning
-- **Polars** -- datatransformation
-- **Pydantic** -- datavalidering
-- **BeautifulSoup4** -- webscraping
-- **Marimo + Altair** -- interaktiv visualisering
-- **Parquet** -- datalagring
+- **Dagster** -- orchestration and scheduling
+- **Polars** -- data transformation
+- **Pydantic** -- data validation
+- **BeautifulSoup4** -- web scraping
+- **Marimo + Altair** -- interactive visualization
+- **Parquet** -- data storage
 
-## Projektstruktur
+## Project structure
 
 ```
 src/markets_data_hub/
-  definitions.py          # Jobs, scheman och resursdefinitioner
+  definitions.py          # Jobs, schedules, and resource definitions
   assets/
-    assets.py             # Asset-definitioner (datapipelines)
-    schemas.py            # Pydantic-modeller
+    assets.py             # Asset definitions (data pipelines)
+    schemas.py            # Pydantic models
   utils/
-    constants.py          # Nyckelmappningar för datatransformation
-    functions.py          # Scraping- och API-funktioner
+    constants.py          # Key mappings for data transformation
+    functions.py          # Scraping and API functions
   notebooks/
-    analysis.py           # Marimo-notebook för visualisering
-  data/                   # Genererade Parquet-filer
+    analysis.py           # Marimo notebook for visualization
+  data/                   # Generated Parquet files
 tests/
-  test_assets.py          # Enhetstester för assets
-  test_defs.py            # Tester för pipeline-definitioner
+  test_assets.py          # Unit tests for assets
+  test_defs.py            # Tests for pipeline definitions
 ```
 
 ## Deployment
 
-Projektet deployar automatiskt till [Dagster Cloud Serverless](https://dagster.io/cloud) via GitHub Actions:
+The project deploys automatically to [Dagster Cloud Serverless](https://dagster.io/cloud) via GitHub Actions:
 
-- **Push till main** -- produktionsdeploy (`deploy.yml`)
-- **Push till feature-branch** -- branch-deploy (`branch_deployments.yml`)
+- **Push to main** -- production deploy (`deploy.yml`)
+- **Push to feature branch** -- branch deploy (`branch_deployments.yml`)
