@@ -1,8 +1,12 @@
 """Schemas."""
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    field_validator
+)
 from typing import Optional
-from datetime import date
+from datetime import date, datetime
 
 class RbCertAuctionResult(BaseModel):
     """Riksbank certificats."""
@@ -39,3 +43,27 @@ class AuctionResult(BaseModel):
     Hogst_accepterade_ranta: Optional[float] = None
     Tilldelning_hosta_ranta: Optional[float] = None
     Source_url : str
+
+
+class SwestrResult(BaseModel):
+    """SWESTR."""
+    model_config = ConfigDict(extra='ignore')
+
+    rate: float
+    date: date
+    pctl12_5: Optional[float] = None
+    pctl87_5: Optional[float] = None
+    volume: Optional[int] = None
+    alternativeCalculation: bool
+    alternativeCalculationReason: Optional[str] = None
+    publicationTime: datetime
+    republication: bool
+    numberOfTransactions: Optional[int] = None
+    numberOfAgents: Optional[int] = None
+
+    @field_validator("numberOfAgents", "numberOfTransactions", "volume", mode="before")
+    @classmethod
+    def coerce_to_int(cls, v):
+        if v is None:
+            return None
+        return int(v)

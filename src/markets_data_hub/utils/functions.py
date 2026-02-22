@@ -5,6 +5,8 @@ import re
 import time
 import unicodedata
 from datetime import datetime
+from typing import Any
+from dagster import ConfigurableResource
 
 import requests
 from bs4 import BeautifulSoup
@@ -300,3 +302,34 @@ def convert_record(row: dict):
             new_key = KEY_MAP_GOV[key]
             cleaned[new_key] = clean_value(value)
     return cleaned
+
+
+### Swestr API
+
+class SwestrApiResource(ConfigurableResource):
+    """SWESTR API resource."""
+
+    api_key: str
+
+    def get_swestr_rate(
+        self, interest_rate_id: str, from_date: str
+    ) -> list[dict[str, Any]]:
+        """Define function to get Swestr rates.
+
+        The function takes the code for the Swestr rate
+        and the date from when you want to collect them
+        as input.
+        """
+        base_url = "https://api.riksbank.se/swestr/v1"
+
+        api_url = f"{base_url}/all/{interest_rate_id}?fromDate={from_date}"
+
+        headers = {
+            "Cache-Control": "no-cache",
+            "Ocp-Apim-Subscription-Key": self.api_key,
+        }
+
+        response = requests.get(api_url, timeout=10, headers=headers)
+        response.raise_for_status()
+
+        return response.json()

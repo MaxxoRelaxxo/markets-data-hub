@@ -1,12 +1,21 @@
 """Assets."""
 
-from ..utils.functions import scrape_rb_cert_auctions, transform_record, scrape_riksbank_auctions, convert_record
-from ..assets.schemas import RbCertAuctionResult, AuctionResult
-
-import polars as pl
+from ..utils.functions import (
+    scrape_rb_cert_auctions,
+    transform_record, 
+    scrape_riksbank_auctions, 
+    convert_record, 
+    SwestrApiResource
+)
+from ..assets.schemas import (
+    RbCertAuctionResult,
+    AuctionResult,
+    SwestrResult
+)
 
 from dagster import AssetExecutionContext, MaterializeResult, asset
 from pathlib import Path
+import polars as pl
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -75,6 +84,48 @@ def sales_of_gov_bonds(context: AssetExecutionContext) -> MaterializeResult:
     df = pl.DataFrame([item.model_dump() for item in validated])
 
     output_path = DATA_DIR / "sales_of_government_bonds.parquet"
+    df.write_parquet(output_path)
+    context.log.info(f"Writing {len(df)} rows to {output_path}")
+
+    return MaterializeResult(
+        metadata={
+            "num_records": len(df),
+            "path": str(output_path),
+        }
+    )
+
+
+@asset(group_name="Market_operations")
+def get_swestr_values(context: AssetExecutionContext, swestr_api: SwestrApiResource) -> MaterializeResult:
+    """Get SWESTR values.
+
+    Collect SWESTR values from Swestr API.
+    """
+    result = swestr_api.get_swestr_rate(
+        interest_rate_id="SWESTR",
+        from_date="2020-01-01",
+    )
+    
+    validated = [SwestrResult(**row) for row in result]
+    
+    df = pl.DataFrame(
+        [r.model_dump() for r in validated],
+        schema={
+            "rate": pl.Float64,
+            "date": pl.Date,
+            "pctl12_5": pl.Float64,
+            "pctl87_5": pl.Float64,
+            "volume": pl.Int64,
+            "alternativeCalculation": pl.Boolean,
+            "alternativeCalculationReason": pl.Utf8,
+            "publicationTime": pl.Datetime,
+            "republication": pl.Boolean,
+            "numberOfTransactions": pl.Int64,
+            "numberOfAgents": pl.Int64,
+        },
+    )
+    
+    output_path = DATA_DIR / "swestr_values.parquet"
     df.write_parquet(output_path)
     context.log.info(f"Writing {len(df)} rows to {output_path}")
 
