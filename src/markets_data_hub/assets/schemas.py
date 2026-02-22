@@ -67,3 +67,11 @@ class SwestrResult(BaseModel):
         if v is None:
             return None
         return int(v)
+    
+
+class PolicyRateResult(BaseModel):
+    """Policy rate."""
+    model_config = ConfigDict(extra='ignore')
+
+    date: str
+    value: float

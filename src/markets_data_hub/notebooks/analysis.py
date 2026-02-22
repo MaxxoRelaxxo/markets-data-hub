@@ -416,9 +416,21 @@ def _(mo):
 
 @app.cell
 def _(pl, swestr):
+    date_col = "date"
+
     df_swestr = (
         pl.read_parquet(swestr)
     )
+
+    cut = (
+        df_swestr.filter(pl.col(date_col).dt.month() == 12)
+          .group_by(pl.col(date_col).dt.year())
+          .agg(pl.col(date_col).max().alias("last_dec"))
+          .select("last_dec")
+    )
+
+    df_swestr = df_swestr.filter(~pl.col(date_col).is_in(cut["last_dec"].implode()))
+    df_swestr
     return (df_swestr,)
 
 
@@ -435,6 +447,103 @@ def _(df_swestr, mo):
         swestr_card(mo.stat(value=str(swestr_row['numberOfTransactions']), label="Antal transaktioner", bordered=True)),
         swestr_card(mo.stat(value=str(swestr_row['numberOfAgents']), label="Antal rapportörer", bordered=True)),
     ])
+    return
+
+
+@app.cell
+def _(alt, df_swestr, mo):
+    def swestr_band():
+        chart = alt.layer(
+            # Band mellan percentilerna
+            alt.Chart(df_swestr).mark_area(opacity=0.2, color="#0071B9").encode(
+                x=alt.X("date:T", axis=alt.Axis(title="", format="%Y", tickCount="year")),
+                y=alt.Y("pctl12_5:Q", scale=alt.Scale(zero=False), axis=alt.Axis(title="Ränta (%)")),
+                y2=alt.Y2("pctl87_5:Q"),
+            ),
+            # SWESTR-räntan
+            alt.Chart(df_swestr).mark_line(color="#0071B9", strokeWidth=1.5).encode(
+                x=alt.X("date:T"),
+                y=alt.Y("rate:Q"),
+                tooltip=[
+                    alt.Tooltip("date:T", title="Datum"),
+                    alt.Tooltip("rate:Q", title="SWESTR (%)", format=".3f"),
+                    alt.Tooltip("pctl12_5:Q", title="Nedre gräns (%)", format=".3f"),
+                    alt.Tooltip("pctl87_5:Q", title="Övre gräns (%)", format=".3f"),
+                ],
+            ),
+        ).properties(
+            title=alt.Title(text="SWESTR med trimningsgränser", fontSize=16),
+            width="container",
+            height=400,
+        ).interactive()
+
+        return mo.vstack([
+            chart,
+            mo.Html("""
+                <div style="font-size:11px; color:gray; text-align:left; padding: 4px 0 0 0px;">
+                    Bandet visar spridningen mellan nedre (12,5%) och övre (87,5%) trimningsgräns.<br>
+                    Källa: Riksbanken.
+                </div>
+            """),
+        ])
+
+    swestr_band()
+    return
+
+
+@app.cell
+def _(alt, df_swestr, mo, pl):
+    def swestr_boxplot():
+        latest_month = df_swestr.sort("date").tail(1)["date"][0]
+
+        df_box = (
+            df_swestr
+            .filter(
+                (pl.col("date").dt.year() == latest_month.year) &
+                (pl.col("date").dt.month() == latest_month.month)
+            )
+            .select(["date", "rate", "pctl12_5", "pctl87_5"])
+            .unpivot(
+                index="date",
+                on=["rate", "pctl12_5", "pctl87_5"],
+                variable_name="serie",
+                value_name="värde",
+            )
+            .with_columns(pl.col("date").cast(pl.Utf8))
+        )
+
+        chart = (
+            alt.Chart(df_box)
+            .mark_boxplot(extent="min-max")
+            .encode(
+                x=alt.X("date:O", axis=alt.Axis(title="", labelAngle=-45)),
+                y=alt.Y(
+                    "värde:Q",
+                    axis=alt.Axis(title="Ränta (%)"),
+                    scale=alt.Scale(zero=False),
+                ),
+            )
+            .properties(
+                title=alt.Title(
+                    text=f"SWESTR – {latest_month.year}-{latest_month.month:02d}",
+                    fontSize=16,
+                ),
+                width="container",
+                height=400,
+            )
+        )
+
+        return mo.vstack([
+            chart,
+            mo.Html("""
+                <div style="font-size:11px; color:gray; text-align:left; padding: 4px 0 0 0px;">
+                    Lådan visar spridningen mellan pctl12,5, rate och pctl87,5 per dag.<br>
+                    Källa: Riksbanken.
+                </div>
+            """),
+        ])
+
+    swestr_boxplot()
     return
 
 

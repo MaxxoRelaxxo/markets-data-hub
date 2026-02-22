@@ -7,14 +7,16 @@ from dagster import (
     ScheduleDefinition,
     define_asset_job,
 )
-from markets_data_hub.utils.functions import SwestrApiResource
+from markets_data_hub.utils.functions import SwestrApiResource, SweaApiResource
 
 swestr_resource = SwestrApiResource(api_key=EnvVar("RIKSBANK_API_KEY"))
+swea_api = SweaApiResource(api_key=EnvVar("RIKSBANK_API_KEY"))
 
 from .assets.assets import (
     riksbank_certificate,
     sales_of_gov_bonds,
-    get_swestr_values
+    get_swestr_values,
+    get_policy_rate_values
 )
 
 riksbank_certificate_job = define_asset_job(
@@ -30,6 +32,11 @@ sales_of_gov_bonds_job = define_asset_job(
 swestr_job = define_asset_job(
     name="swestr_job",
     selection=AssetSelection.assets(get_swestr_values),
+)
+
+policy_rate_job = define_asset_job(
+    name="policy_rate_job",
+    selection=AssetSelection.assets(get_policy_rate_values),
 )
 
 riksbank_certificate_schedule = ScheduleDefinition(
@@ -50,17 +57,28 @@ swestr_schedule = ScheduleDefinition(
     cron_schedule="5 9 * * 1-5",  # Every weekday at 09:05
 )
 
+policy_rate_schedule = ScheduleDefinition(
+    name="swea_weekday",
+    target=policy_rate_job,
+    cron_schedule="5 9 * * 1-5",  # Every weekday at 09:05
+)
+
 defs = Definitions(
     assets=[
         riksbank_certificate,
         sales_of_gov_bonds,
-        get_swestr_values
+        get_swestr_values,
+        get_policy_rate_values
     ],
-    jobs=[riksbank_certificate_job, sales_of_gov_bonds_job, swestr_job],
+    jobs=[riksbank_certificate_job, sales_of_gov_bonds_job, swestr_job, policy_rate_job],
     schedules=[
         riksbank_certificate_schedule,
         sales_of_gov_bonds_schedule,
         swestr_schedule,
+        policy_rate_schedule
     ],
-    resources={"swestr_api": swestr_resource},
+    resources={
+        "swestr_api": swestr_resource,
+        "swea_api" : swea_api
+    },
 )
