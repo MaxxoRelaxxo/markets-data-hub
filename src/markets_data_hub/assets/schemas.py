@@ -73,5 +73,5 @@ class PolicyRateResult(BaseModel):
     """Policy rate."""
     model_config = ConfigDict(extra='ignore')
 
-    date: str
+    date: date
     value: float

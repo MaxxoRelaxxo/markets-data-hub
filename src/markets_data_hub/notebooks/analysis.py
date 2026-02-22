@@ -29,7 +29,8 @@ def _():
     rb_gov = "src/markets_data_hub/data/sales_of_government_bonds.parquet"
     ref_rgk = "src/markets_data_hub/data/ref_rgk.xlsx"
     swestr = "src/markets_data_hub/data/swestr_values.parquet"
-    return rb_cert, rb_gov, ref_rgk, swestr
+    policy_rate = "src/markets_data_hub/data/policy_rate_values.parquet"
+    return policy_rate, rb_cert, rb_gov, ref_rgk, swestr
 
 
 @app.cell
@@ -415,12 +416,11 @@ def _(mo):
 
 
 @app.cell
-def _(pl, swestr):
+def _(pl, policy_rate, swestr):
     date_col = "date"
 
-    df_swestr = (
-        pl.read_parquet(swestr)
-    )
+    df_swestr = pl.read_parquet(swestr)
+    df_policy_rate = pl.read_parquet(policy_rate)
 
     cut = (
         df_swestr.filter(pl.col(date_col).dt.month() == 12)
@@ -429,8 +429,17 @@ def _(pl, swestr):
           .select("last_dec")
     )
 
-    df_swestr = df_swestr.filter(~pl.col(date_col).is_in(cut["last_dec"].implode()))
-    df_swestr
+    df_swestr = (
+        df_swestr
+        .filter(~pl.col(date_col).is_in(cut["last_dec"].implode()))
+        .join(df_policy_rate, on="date")
+        .rename({
+            "value" : "policy_rate"
+        })
+        .with_columns(
+            (pl.col.policy_rate - pl.col.rate).alias("diff_swestr")
+        )
+    )
     return (df_swestr,)
 
 
@@ -447,6 +456,62 @@ def _(df_swestr, mo):
         swestr_card(mo.stat(value=str(swestr_row['numberOfTransactions']), label="Antal transaktioner", bordered=True)),
         swestr_card(mo.stat(value=str(swestr_row['numberOfAgents']), label="Antal rapportörer", bordered=True)),
     ])
+    return
+
+
+@app.cell
+def _(alt, df_swestr, mo, pl):
+    def swestr_boxplot():
+        latest_month = df_swestr.sort("date").tail(1)["date"][0]
+
+        df_box = (
+            df_swestr
+            .filter(
+                (pl.col("date").dt.year() == latest_month.year) &
+                (pl.col("date").dt.month() == latest_month.month)
+            )
+            .select(["date", "rate", "pctl12_5", "pctl87_5"])
+            .unpivot(
+                index="date",
+                on=["rate", "pctl12_5", "pctl87_5"],
+                variable_name="serie",
+                value_name="värde",
+            )
+            .with_columns(pl.col("date").cast(pl.Utf8))
+        )
+
+        chart = (
+            alt.Chart(df_box)
+            .mark_boxplot(extent="min-max")
+            .encode(
+                x=alt.X("date:O", axis=alt.Axis(title="", labelAngle=-45)),
+                y=alt.Y(
+                    "värde:Q",
+                    axis=alt.Axis(title="Ränta (%)"),
+                    scale=alt.Scale(zero=False),
+                ),
+            )
+            .properties(
+                title=alt.Title(
+                    text=f"Swestr notering under den senaste månaden",
+                    fontSize=16,
+                ),
+                width="container",
+                height=400,
+            )
+        )
+
+        return mo.vstack([
+            chart,
+            mo.Html("""
+                <div style="font-size:11px; color:gray; text-align:left; padding: 4px 0 0 0px;">
+                    Lådan visar spridningen mellan nedre/övre trimningsgräns och Swestr per dag.<br>
+                    Källa: Riksbanken.
+                </div>
+            """),
+        ])
+
+    swestr_boxplot()
     return
 
 
@@ -492,58 +557,8 @@ def _(alt, df_swestr, mo):
 
 
 @app.cell
-def _(alt, df_swestr, mo, pl):
-    def swestr_boxplot():
-        latest_month = df_swestr.sort("date").tail(1)["date"][0]
-
-        df_box = (
-            df_swestr
-            .filter(
-                (pl.col("date").dt.year() == latest_month.year) &
-                (pl.col("date").dt.month() == latest_month.month)
-            )
-            .select(["date", "rate", "pctl12_5", "pctl87_5"])
-            .unpivot(
-                index="date",
-                on=["rate", "pctl12_5", "pctl87_5"],
-                variable_name="serie",
-                value_name="värde",
-            )
-            .with_columns(pl.col("date").cast(pl.Utf8))
-        )
-
-        chart = (
-            alt.Chart(df_box)
-            .mark_boxplot(extent="min-max")
-            .encode(
-                x=alt.X("date:O", axis=alt.Axis(title="", labelAngle=-45)),
-                y=alt.Y(
-                    "värde:Q",
-                    axis=alt.Axis(title="Ränta (%)"),
-                    scale=alt.Scale(zero=False),
-                ),
-            )
-            .properties(
-                title=alt.Title(
-                    text=f"SWESTR – {latest_month.year}-{latest_month.month:02d}",
-                    fontSize=16,
-                ),
-                width="container",
-                height=400,
-            )
-        )
-
-        return mo.vstack([
-            chart,
-            mo.Html("""
-                <div style="font-size:11px; color:gray; text-align:left; padding: 4px 0 0 0px;">
-                    Lådan visar spridningen mellan pctl12,5, rate och pctl87,5 per dag.<br>
-                    Källa: Riksbanken.
-                </div>
-            """),
-        ])
-
-    swestr_boxplot()
+def _(df_swestr):
+    df_swestr.columns
     return
 
 
