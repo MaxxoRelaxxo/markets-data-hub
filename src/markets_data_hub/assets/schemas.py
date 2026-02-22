@@ -1,6 +1,10 @@
 """Schemas."""
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    field_validator
+)
 from typing import Optional
 from datetime import date, datetime
 
@@ -49,10 +53,17 @@ class SwestrResult(BaseModel):
     date: date
     pctl12_5: Optional[float] = None
     pctl87_5: Optional[float] = None
-    volume: int
-    alternativeCalculation: str
+    volume: Optional[int] = None
+    alternativeCalculation: bool
     alternativeCalculationReason: Optional[str] = None
     publicationTime: datetime
     republication: bool
-    numberOfTransactions: int
-    numberOfAgents: int
+    numberOfTransactions: Optional[int] = None
+    numberOfAgents: Optional[int] = None
+
+    @field_validator("numberOfAgents", "numberOfTransactions", "volume", mode="before")
+    @classmethod
+    def coerce_to_int(cls, v):
+        if v is None:
+            return None
+        return int(v)

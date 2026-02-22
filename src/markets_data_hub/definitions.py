@@ -10,7 +10,11 @@ from markets_data_hub.utils.functions import SwestrApiResource
 
 swestr_resource = SwestrApiResource(api_key=EnvVar("RIKSBANK_API_KEY"))
 
-from .assets.assets import riksbank_certificate, sales_of_gov_bonds
+from .assets.assets import (
+    riksbank_certificate,
+    sales_of_gov_bonds,
+    get_swestr_values
+)
 
 riksbank_certificate_schedule = ScheduleDefinition(
     name="riksbank_certificate_weekly",
@@ -28,6 +32,7 @@ defs = Definitions(
     assets=[
         riksbank_certificate,
         sales_of_gov_bonds,
+        get_swestr_values
     ],
     schedules=[
         riksbank_certificate_schedule,

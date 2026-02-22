@@ -106,12 +106,26 @@ def get_swestr_values(context: AssetExecutionContext, swestr_api: SwestrApiResou
         from_date="2020-01-01",
     )
     
-    validated = [SwestrResult(**row) for row in data]
+    validated = [SwestrResult(**row) for row in result]
     
-    df = pl.DataFrame([r.model_dump() for r in validated])
+    df = pl.DataFrame(
+        [r.model_dump() for r in validated],
+        schema={
+            "rate": pl.Float64,
+            "date": pl.Date,
+            "pctl12_5": pl.Float64,
+            "pctl87_5": pl.Float64,
+            "volume": pl.Int64,
+            "alternativeCalculation": pl.Boolean,
+            "alternativeCalculationReason": pl.Utf8,
+            "publicationTime": pl.Datetime,
+            "republication": pl.Boolean,
+            "numberOfTransactions": pl.Int64,
+            "numberOfAgents": pl.Int64,
+        },
+    )
     
     output_path = DATA_DIR / "swestr_values.parquet"
-    
     df.write_parquet(output_path)
     context.log.info(f"Writing {len(df)} rows to {output_path}")
 
