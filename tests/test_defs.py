@@ -8,3 +8,4 @@ def test_def_can_load():
 def test_schedules_are_registered():
     assert defs.get_schedule_def("riksbank_certificate_weekly")
     assert defs.get_schedule_def("sales_of_gov_bonds_weekly")
+    assert defs.get_schedule_def("swestr_weekday")
