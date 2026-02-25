@@ -13,3 +13,6 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# Generated site output
+site/
