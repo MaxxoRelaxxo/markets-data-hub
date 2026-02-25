@@ -1,0 +1,199 @@
+/* ── Reset & base ─────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --blue: #0071b9;
+  --red: #b91e2b;
+  --yellow: #f4a700;
+  --gray-bg: #f2f2f2;
+  --text: #333;
+  --text-light: #666;
+  --border: #e0e0e0;
+  --radius: 8px;
+}
+
+body {
+  font-family: "Inter", "Calibri", sans-serif;
+  color: var(--text);
+  background: #fafafa;
+  line-height: 1.5;
+}
+
+/* ── Layout ───────────────────────────────────────────────────── */
+.page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+}
+
+/* ── Header ───────────────────────────────────────────────────── */
+.header {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 32px 24px 24px;
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.header-title {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.header-subtitle {
+  margin-top: 6px;
+  font-size: 1rem;
+  color: var(--text-light);
+}
+
+/* ── Sections ─────────────────────────────────────────────────── */
+.section-heading {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 40px 0 8px;
+}
+
+.section {
+  margin-top: 40px;
+}
+
+.section h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 24px 0 8px;
+}
+
+.chart-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 32px 0 12px;
+}
+
+/* ── Stat cards ───────────────────────────────────────────────── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+.stat-caption {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+/* ── Source notes ──────────────────────────────────────────────── */
+.source-note {
+  font-size: 0.7rem;
+  color: #999;
+  margin-top: 8px;
+  padding-left: 60px;
+  line-height: 1.6;
+}
+
+/* ── Tooltip ──────────────────────────────────────────────────── */
+.custom-tooltip {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.custom-tooltip p {
+  margin: 2px 0;
+}
+
+/* ── Custom legend (bonds) ────────────────────────────────────── */
+.chart-legend-custom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+  font-size: 0.8rem;
+}
+
+.legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+/* ── Footer ───────────────────────────────────────────────────── */
+.footer {
+  margin-top: auto;
+  text-align: center;
+  padding: 24px;
+  font-size: 0.75rem;
+  color: #999;
+  border-top: 1px solid var(--border);
+  background: #fff;
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .header-title {
+    font-size: 2rem;
+  }
+
+  .stat-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .source-note {
+    padding-left: 0;
+  }
+}

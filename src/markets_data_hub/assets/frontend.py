@@ -1,13 +1,13 @@
-"""Frontend build asset – exports the Marimo notebook to static HTML."""
+"""Frontend build asset – converts data to JSON for the React frontend."""
 
 import subprocess
+import sys
 from pathlib import Path
 
 from dagster import AssetExecutionContext, MaterializeResult, asset
 
-NOTEBOOK_PATH = Path(__file__).resolve().parent.parent / "notebooks" / "analysis.py"
-SITE_DIR = Path(__file__).resolve().parent.parent.parent.parent / "site"
-OUTPUT_PATH = SITE_DIR / "index.html"
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+BUILD_SCRIPT = REPO_ROOT / "scripts" / "build_data.py"
 
 
 @asset(
@@ -15,42 +15,32 @@ OUTPUT_PATH = SITE_DIR / "index.html"
     deps=["riksbank_certificate", "sales_of_gov_bonds", "get_swestr_values", "get_policy_rate_values"],
 )
 def build_frontend(context: AssetExecutionContext) -> MaterializeResult:
-    """Build static frontend.
+    """Build frontend data files.
 
-    Exports the Marimo analysis notebook to a self-contained HTML file
-    that can be deployed to GitHub Pages.
+    Converts Parquet data to JSON so the React frontend can consume it.
+    The React build and GitHub Pages deploy are handled by GitHub Actions.
     """
-    SITE_DIR.mkdir(exist_ok=True)
-
-    # Determine the repo root (two levels above src/)
-    repo_root = Path(__file__).resolve().parent.parent.parent.parent
-
     result = subprocess.run(
-        [
-            "marimo",
-            "export",
-            "html",
-            str(NOTEBOOK_PATH),
-            "-o",
-            str(OUTPUT_PATH),
-            "--no-include-code",
-        ],
-        cwd=str(repo_root),
+        [sys.executable, str(BUILD_SCRIPT)],
+        cwd=str(REPO_ROOT),
         capture_output=True,
         text=True,
-        timeout=120,
+        timeout=60,
     )
 
     if result.returncode != 0:
-        context.log.error(f"marimo export failed:\n{result.stderr}")
-        raise RuntimeError(f"marimo export failed with code {result.returncode}")
+        context.log.error(f"build_data.py failed:\n{result.stderr}")
+        raise RuntimeError(f"build_data.py failed with code {result.returncode}")
 
-    context.log.info(f"Frontend exported to {OUTPUT_PATH}")
-    file_size_kb = OUTPUT_PATH.stat().st_size / 1024
+    context.log.info(result.stdout)
+
+    out_dir = REPO_ROOT / "frontend" / "public" / "data"
+    json_files = list(out_dir.glob("*.json"))
+    total_kb = sum(f.stat().st_size for f in json_files) / 1024
 
     return MaterializeResult(
         metadata={
-            "path": str(OUTPUT_PATH),
-            "size_kb": round(file_size_kb, 1),
+            "json_files": len(json_files),
+            "total_size_kb": round(total_kb, 1),
         }
     )
