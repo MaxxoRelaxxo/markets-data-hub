@@ -8,13 +8,18 @@ export default function App() {
     <div className="page">
       <Header />
       <main className="main">
-        <h1 className="section-heading">Marknadsoperationer</h1>
+        <h1 className="page-heading">Marknadsoperationer</h1>
+        <p className="page-heading-sub">Riksbankens marknadsoperationer och penningpolitiska instrument</p>
         <CertificateSection />
         <BondsSection />
         <SwestrSection />
       </main>
       <footer className="footer">
-        <p>Kalla: Riksbanken &middot; Uppdateras automatiskt via Dagster</p>
+        <div className="footer-inner">
+          <span>Kalla: Riksbanken</span>
+          <span className="footer-divider">&middot;</span>
+          <span>Uppdateras automatiskt via Dagster</span>
+        </div>
       </footer>
     </div>
   );
