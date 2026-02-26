@@ -58,7 +58,7 @@ export default function CertificateSection() {
       </div>
 
       <div className="chart-card">
-        <div className="chart-card-title">Likviditetsoverskott over tid</div>
+        <div className="chart-card-title">Likviditetsöverskott över tid</div>
         <ResponsiveContainer width="100%" height={320}>
           <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <defs>
@@ -87,12 +87,12 @@ export default function CertificateSection() {
             <Tooltip content={<ChartTooltip />} />
             <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
             <Area type="monotone" dataKey="Erbjuden volym" stroke="#0071B9" fill="url(#gCertBlue)" strokeWidth={2} />
-            <Area type="monotone" dataKey="Likviditetsoverskott" stroke="#B91E2B" fill="url(#gCertRed)" strokeWidth={2} />
-            <Area type="monotone" dataKey="Rantefri inlaning" stroke="#D4880A" fill="url(#gCertAmber)" strokeWidth={2} connectNulls={false} />
+            <Area type="monotone" dataKey="Likviditetsöverskott" stroke="#B91E2B" fill="url(#gCertRed)" strokeWidth={2} />
+            <Area type="monotone" dataKey="Räntefri inlåning" stroke="#D4880A" fill="url(#gCertAmber)" strokeWidth={2} connectNulls={false} />
           </AreaChart>
         </ResponsiveContainer>
         <div className="chart-note">
-          Grafen omfattar ej aterforsakring av riksbankscertifikat eller finjusterade transaktioner. Kalla: Riksbanken.
+          Grafen omfattar ej återköp av riksbankscertifikat eller finjusterade transaktioner. Kalla: Riksbanken.
         </div>
       </div>
     </div>

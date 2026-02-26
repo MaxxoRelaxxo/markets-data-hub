@@ -18,7 +18,7 @@ const formatDate = (s) => {
 const TABS = [
   { id: "cert", label: "Riksbankscertifikat" },
   { id: "gov", label: "Statsobligationer" },
-  { id: "swestr", label: "SWESTR" },
+  { id: "swestr", label: "Swestr" },
 ];
 
 export default function App() {
@@ -54,12 +54,12 @@ export default function App() {
                 <h1 className="header-title">Marknadsdata</h1>
               </div>
               <div className="header-meta">
-                Vecka {week} &middot; {now.getFullYear()} &middot; Riksbanken
+                Vecka {week} &middot; {now.getFullYear()} &middot;
               </div>
             </div>
             <div className="header-stats">
               <div className="header-stat">
-                <div className="header-stat-label">Styranta</div>
+                <div className="header-stat-label">Styränta</div>
                 <div className="header-stat-value">
                   {policyRate != null ? `${policyRate.toFixed(2).replace(".", ",")} %` : "\u2013"}
                 </div>
@@ -97,7 +97,7 @@ export default function App() {
         {activeTab === "swestr" && <SwestrSection />}
 
         <div className="footer">
-          <div>Publicerat: {now.toISOString().slice(0, 10)} &middot; Kalla: Riksbanken / Riksgalden</div>
+          <div>Publicerat: {now.toISOString().slice(0, 10)}</div>
           <div className="footer-right">Marknadsdata &mdash; Vecka {week} {now.getFullYear()}</div>
         </div>
       </main>

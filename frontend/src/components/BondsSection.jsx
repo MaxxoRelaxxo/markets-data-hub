@@ -78,7 +78,7 @@ export default function BondsSection() {
         <StatCard label="Senaste B/C" value={last?.bid_to_cover?.toFixed(2).replace(".", ",") ?? "\u2013"} />
         <StatCard label="Genomsnitt B/C" value={avgBtc.toFixed(2).replace(".", ",")} />
         <StatCard label="Senaste tilldelning" value={last ? Math.round(last.tilldelad).toLocaleString("sv-SE") : "\u2013"} unit="Mkr" />
-        <StatCard label="Senaste lopetid" value={last?.lopetid?.toFixed(1).replace(".", ",") ?? "\u2013"} unit="ar" />
+        <StatCard label="Senaste löptid" value={last?.lopetid?.toFixed(1).replace(".", ",") ?? "\u2013"} unit="ar" />
       </div>
 
       <div className="chart-card">
@@ -133,7 +133,7 @@ export default function BondsSection() {
         </div>
 
         <div className="chart-note">
-          Misslyckade auktioner (tilldelad volym = 0) ar exkluderade. Kalla: Riksbanken/Riksgalden.
+          Misslyckade auktioner (tilldelad volym = 0) ar exkluderade. Källa: Riksbanken/Riksgalden.
         </div>
       </div>
     </div>
