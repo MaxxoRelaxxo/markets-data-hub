@@ -18,6 +18,7 @@ from .assets.assets import (
     get_swestr_values,
     get_policy_rate_values
 )
+from .assets.frontend import build_frontend
 
 riksbank_certificate_job = define_asset_job(
     name="riksbank_certificate_job",
@@ -37,6 +38,11 @@ swestr_job = define_asset_job(
 policy_rate_job = define_asset_job(
     name="policy_rate_job",
     selection=AssetSelection.assets(get_policy_rate_values),
+)
+
+build_frontend_job = define_asset_job(
+    name="build_frontend_job",
+    selection=AssetSelection.assets(build_frontend),
 )
 
 riksbank_certificate_schedule = ScheduleDefinition(
@@ -63,19 +69,27 @@ policy_rate_schedule = ScheduleDefinition(
     cron_schedule="5 9 * * 1-5",  # Every weekday at 09:05
 )
 
+build_frontend_schedule = ScheduleDefinition(
+    name="build_frontend_weekly",
+    target=build_frontend_job,
+    cron_schedule="0 11 * * 5",  # Every Friday at 11:00 (after data jobs finish)
+)
+
 defs = Definitions(
     assets=[
         riksbank_certificate,
         sales_of_gov_bonds,
         get_swestr_values,
-        get_policy_rate_values
+        get_policy_rate_values,
+        build_frontend,
     ],
-    jobs=[riksbank_certificate_job, sales_of_gov_bonds_job, swestr_job, policy_rate_job],
+    jobs=[riksbank_certificate_job, sales_of_gov_bonds_job, swestr_job, policy_rate_job, build_frontend_job],
     schedules=[
         riksbank_certificate_schedule,
         sales_of_gov_bonds_schedule,
         swestr_schedule,
-        policy_rate_schedule
+        policy_rate_schedule,
+        build_frontend_schedule,
     ],
     resources={
         "swestr_api": swestr_resource,

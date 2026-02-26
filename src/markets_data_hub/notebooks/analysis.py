@@ -20,16 +20,21 @@ def _():
         alt.renderers.set_embed_options(actions=False)
 
     setup_altair()
-    return alt, date, datetime, mo, pl
+    return Path, alt, date, datetime, mo, pl
 
 
 @app.cell
-def _():
-    rb_cert = "src/markets_data_hub/data/rb_cert_auctions_result.parquet"
-    rb_gov = "src/markets_data_hub/data/sales_of_government_bonds.parquet"
-    ref_rgk = "src/markets_data_hub/data/ref_rgk.xlsx"
-    swestr = "src/markets_data_hub/data/swestr_values.parquet"
-    policy_rate = "src/markets_data_hub/data/policy_rate_values.parquet"
+def _(Path):
+    _data_dir = (
+        Path("src/markets_data_hub/data")
+        if Path("src/markets_data_hub/data").exists()
+        else Path("markets_data_hub/data")
+    )
+    rb_cert = str(_data_dir / "rb_cert_auctions_result.parquet")
+    rb_gov = str(_data_dir / "sales_of_government_bonds.parquet")
+    ref_rgk = str(_data_dir / "ref_rgk.xlsx")
+    swestr = str(_data_dir / "swestr_values.parquet")
+    policy_rate = str(_data_dir / "policy_rate_values.parquet")
     return policy_rate, rb_cert, rb_gov, ref_rgk, swestr
 
 

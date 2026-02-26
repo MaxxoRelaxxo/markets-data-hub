@@ -9,3 +9,4 @@ def test_schedules_are_registered():
     assert defs.get_schedule_def("riksbank_certificate_weekly")
     assert defs.get_schedule_def("sales_of_gov_bonds_weekly")
     assert defs.get_schedule_def("swestr_weekday")
+    assert defs.get_schedule_def("build_frontend_weekly")
