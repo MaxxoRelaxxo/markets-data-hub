@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
+  BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   ResponsiveContainer, Legend,
 } from "recharts";
 import StatCard from "./StatCard";
@@ -38,8 +38,8 @@ export default function CertificateSection() {
   const chartData = timeseries.slice(-120).map((d) => ({
     date: d.date.slice(0, 7),
     "Erbjuden volym": d.erbjuden_volym,
-    "Likviditetsoverskott": d.aterstaende,
-    "Rantefri inlaning": d.rantefri_inlaning,
+    "Likviditetsöverskott": d.aterstaende,
+    "Räntefri inlåning": d.rantefri_inlaning,
   }));
 
   return (
@@ -60,22 +60,8 @@ export default function CertificateSection() {
       <div className="chart-card">
         <div className="chart-card-title">Likviditetsöverskott över tid</div>
         <ResponsiveContainer width="100%" height={320}>
-          <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-            <defs>
-              <linearGradient id="gCertBlue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#0071B9" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#0071B9" stopOpacity={0.1} />
-              </linearGradient>
-              <linearGradient id="gCertRed" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#B91E2B" stopOpacity={0.7} />
-                <stop offset="95%" stopColor="#B91E2B" stopOpacity={0.1} />
-              </linearGradient>
-              <linearGradient id="gCertAmber" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#D4880A" stopOpacity={0.6} />
-                <stop offset="95%" stopColor="#D4880A" stopOpacity={0.05} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" />
+          <BarChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
             <XAxis
               dataKey="date" interval={11}
               tick={{ fontSize: 11, fill: "var(--muted)" }} tickLine={false} axisLine={false}
@@ -86,10 +72,10 @@ export default function CertificateSection() {
             />
             <Tooltip content={<ChartTooltip />} />
             <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
-            <Area type="monotone" dataKey="Erbjuden volym" stroke="#0071B9" fill="url(#gCertBlue)" strokeWidth={2} />
-            <Area type="monotone" dataKey="Likviditetsöverskott" stroke="#B91E2B" fill="url(#gCertRed)" strokeWidth={2} />
-            <Area type="monotone" dataKey="Räntefri inlåning" stroke="#D4880A" fill="url(#gCertAmber)" strokeWidth={2} connectNulls={false} />
-          </AreaChart>
+            <Bar dataKey="Erbjuden volym" fill="#0071B9" fillOpacity={0.85} radius={[3, 3, 0, 0]} />
+            <Bar dataKey="Likviditetsöverskott" stackId="stack" fill="#B91E2B" fillOpacity={0.85} />
+            <Bar dataKey="Räntefri inlåning" stackId="stack" fill="#D4880A" fillOpacity={0.85} radius={[3, 3, 0, 0]} />
+          </BarChart>
         </ResponsiveContainer>
         <div className="chart-note">
           Grafen omfattar ej återköp av riksbankscertifikat eller finjusterade transaktioner. Kalla: Riksbanken.
