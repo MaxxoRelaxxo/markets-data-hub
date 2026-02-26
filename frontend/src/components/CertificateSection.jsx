@@ -72,7 +72,7 @@ export default function CertificateSection() {
             />
             <Tooltip content={<ChartTooltip />} />
             <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
-            <Bar dataKey="Erbjuden volym" fill="#0071B9" fillOpacity={0.85} radius={[3, 3, 0, 0]} />
+            <Bar dataKey="Erbjuden volym" stackId="stack" fill="#0071B9" fillOpacity={0.85} />
             <Bar dataKey="Likviditetsöverskott" stackId="stack" fill="#B91E2B" fillOpacity={0.85} />
             <Bar dataKey="Räntefri inlåning" stackId="stack" fill="#D4880A" fillOpacity={0.85} radius={[3, 3, 0, 0]} />
           </BarChart>
