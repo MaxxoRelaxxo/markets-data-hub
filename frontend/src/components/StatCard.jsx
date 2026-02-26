@@ -1,29 +1,21 @@
-export default function StatCard({ value, label, delta, accentColor }) {
-  const deltaClass = delta
-    ? delta.startsWith("+") || (delta.startsWith("Δ +") || delta.startsWith("Δ+"))
-      ? "positive"
-      : delta.includes("+0") || delta.includes("0.0") || delta === "Δ 0"
-        ? "neutral"
-        : "negative"
-    : null;
-
-  // Detect truly neutral (zero change)
-  const isNeutral = delta && (
-    delta === "Δ 0" || delta === "+0.0 mdkr" || delta === "Δ +0" ||
-    delta.includes("+0.0") || delta.includes("-0.0")
-  );
+export default function StatCard({ label, value, unit, delta }) {
+  const isPos = delta > 0;
+  const isNeg = delta < 0;
+  const cls = isPos ? "positive" : isNeg ? "negative" : "neutral";
 
   return (
     <div className="stat-card">
-      {accentColor && (
-        <div className="stat-card-accent" style={{ background: accentColor }} />
-      )}
       <div className="stat-label">{label}</div>
-      <div className="stat-value">{value}</div>
-      {delta && (
-        <span className={`stat-delta ${isNeutral ? "neutral" : deltaClass}`}>
-          {delta}
-        </span>
+      <div className="stat-value">
+        {value}
+        {unit && <span className="stat-unit">{unit}</span>}
+      </div>
+      {delta !== undefined && delta !== null && (
+        <div className={`stat-delta ${cls}`}>
+          {isPos ? "\u25B2" : isNeg ? "\u25BC" : "\u2014"}{" "}
+          {isPos ? "+" : ""}{typeof delta === "number" ? delta.toFixed(1).replace(".", ",") : delta}
+          {unit ? ` ${unit}` : ""}
+        </div>
       )}
     </div>
   );

@@ -1,33 +1,23 @@
 import { useState, useEffect } from "react";
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid,
+  AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
+  ResponsiveContainer, Legend,
 } from "recharts";
 import StatCard from "./StatCard";
 
-const COLORS = {
-  erbjuden_volym: "var(--chart-blue)",
-  aterstaende: "var(--chart-red)",
-  rantefri_inlaning: "var(--chart-amber)",
-};
+const fmt = (v) => v != null ? v.toFixed(1).replace(".", ",") : "\u2013";
 
-function fmt(v) { return v != null ? `${v.toFixed(1)}` : "-"; }
-function fmtUnit(v) { return v != null ? `${v.toFixed(1)} mdkr` : "-"; }
-
-function delta(v) {
-  if (v == null) return null;
-  return `${v >= 0 ? "+" : ""}${v.toFixed(1)} mdkr`;
-}
-
-function CustomTooltip({ active, payload, label }) {
+function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="custom-tooltip">
-      <p><strong>{label}</strong></p>
+    <div className="tt">
+      <div className="tt-label">{label}</div>
       {payload.map((p) => (
-        <p key={p.dataKey} style={{ color: p.color }}>
-          {p.name}: {p.value != null ? `${p.value.toFixed(1)} mdkr` : "-"}
-        </p>
+        <div key={p.dataKey} className="tt-row">
+          <div className="tt-dot" style={{ background: p.color }} />
+          <span className="tt-name">{p.name}:</span>
+          <span className="tt-val">{p.value != null ? `${p.value.toFixed(1)} mdkr` : "\u2013"}</span>
+        </div>
       ))}
     </div>
   );
@@ -45,118 +35,66 @@ export default function CertificateSection() {
   if (!data) return null;
   const { latest: l, timeseries } = data;
 
+  const chartData = timeseries.slice(-120).map((d) => ({
+    date: d.date.slice(0, 7),
+    "Erbjuden volym": d.erbjuden_volym,
+    "Likviditetsoverskott": d.aterstaende,
+    "Rantefri inlaning": d.rantefri_inlaning,
+  }));
+
   return (
-    <section className="section" id="certificates">
-      <div className="section-title">
-        <span className="section-title-icon blue">&#xf3;</span>
-        Riksbankscertifikat
+    <div>
+      <div className="section-header">
+        <div className="section-accent" />
+        <h2 className="section-title">Marknadsoperationer</h2>
+        <p className="section-sub">Auktionsresultat Riksbankscertifikat</p>
       </div>
 
       <div className="stat-row">
-        <StatCard
-          value={fmt(l.erbjuden_volym)}
-          label="Erbjuden volym (mdkr)"
-          delta={delta(l.delta_erbjuden)}
-          accentColor="var(--chart-blue)"
-        />
-        <StatCard
-          value={fmt(l.tilldelad_volym)}
-          label="Tilldelad volym (mdkr)"
-          delta={delta(l.delta_tilldelad)}
-          accentColor="var(--chart-teal)"
-        />
-        <StatCard
-          value={fmt(l.aterstaende)}
-          label="Likviditetsoversott (mdkr)"
-          delta={delta(l.delta_aterstaende)}
-          accentColor="var(--chart-amber)"
-        />
-        <StatCard
-          value={String(l.antal_bud)}
-          label="Antal bud"
-          delta={l.delta_antal_bud != null ? `\u0394 ${l.delta_antal_bud >= 0 ? "+" : ""}${l.delta_antal_bud}` : null}
-          accentColor="var(--chart-purple)"
-        />
+        <StatCard label="Erbjuden volym" value={fmt(l.erbjuden_volym)} unit="mdkr" delta={l.delta_erbjuden} />
+        <StatCard label="Tilldelad volym" value={fmt(l.tilldelad_volym)} unit="mdkr" delta={l.delta_tilldelad} />
+        <StatCard label="Aterstande overskott" value={fmt(l.aterstaende)} unit="mdkr" delta={l.delta_aterstaende} />
+        <StatCard label="Antal bud" value={String(l.antal_bud)} delta={l.delta_antal_bud} />
       </div>
 
       <div className="chart-card">
-        <div className="chart-card-header">
-          <div>
-            <div className="chart-card-title">Likviditetsoversott over tid</div>
-            <div className="chart-card-subtitle">Miljarder kronor</div>
-          </div>
-        </div>
-        <ResponsiveContainer width="100%" height={380}>
-          <AreaChart data={timeseries}>
+        <div className="chart-card-title">Likviditetsoverskott over tid</div>
+        <ResponsiveContainer width="100%" height={320}>
+          <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <defs>
-              <linearGradient id="gradBlue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={COLORS.erbjuden_volym} stopOpacity={0.3} />
-                <stop offset="100%" stopColor={COLORS.erbjuden_volym} stopOpacity={0.02} />
+              <linearGradient id="gCertBlue" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#0071B9" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#0071B9" stopOpacity={0.1} />
               </linearGradient>
-              <linearGradient id="gradRed" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={COLORS.aterstaende} stopOpacity={0.3} />
-                <stop offset="100%" stopColor={COLORS.aterstaende} stopOpacity={0.02} />
+              <linearGradient id="gCertRed" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#B91E2B" stopOpacity={0.7} />
+                <stop offset="95%" stopColor="#B91E2B" stopOpacity={0.1} />
               </linearGradient>
-              <linearGradient id="gradAmber" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={COLORS.rantefri_inlaning} stopOpacity={0.3} />
-                <stop offset="100%" stopColor={COLORS.rantefri_inlaning} stopOpacity={0.02} />
+              <linearGradient id="gCertAmber" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#D4880A" stopOpacity={0.6} />
+                <stop offset="95%" stopColor="#D4880A" stopOpacity={0.05} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" />
             <XAxis
-              dataKey="date"
-              tickFormatter={(d) => d.slice(0, 4)}
-              minTickGap={60}
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#94a3b8", fontSize: 12 }}
+              dataKey="date" interval={11}
+              tick={{ fontSize: 11, fill: "var(--muted)" }} tickLine={false} axisLine={false}
             />
             <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#94a3b8", fontSize: 12 }}
-              width={50}
+              tick={{ fontSize: 11, fill: "var(--muted)" }} tickLine={false} axisLine={false}
+              width={60}
             />
-            <Tooltip content={<CustomTooltip />} />
-            <Area
-              type="monotone" dataKey="erbjuden_volym" name="Erbjuden volym"
-              stackId="1" fill="url(#gradBlue)" stroke={COLORS.erbjuden_volym}
-              strokeWidth={2}
-            />
-            <Area
-              type="monotone" dataKey="aterstaende" name="Likviditetsoversott"
-              stackId="1" fill="url(#gradRed)" stroke={COLORS.aterstaende}
-              strokeWidth={2}
-            />
-            <Area
-              type="monotone" dataKey="rantefri_inlaning" name="Rantefri inlaning"
-              stackId="1" fill="url(#gradAmber)" stroke={COLORS.rantefri_inlaning}
-              strokeWidth={2} connectNulls={false}
-            />
+            <Tooltip content={<ChartTooltip />} />
+            <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
+            <Area type="monotone" dataKey="Erbjuden volym" stroke="#0071B9" fill="url(#gCertBlue)" strokeWidth={2} />
+            <Area type="monotone" dataKey="Likviditetsoverskott" stroke="#B91E2B" fill="url(#gCertRed)" strokeWidth={2} />
+            <Area type="monotone" dataKey="Rantefri inlaning" stroke="#D4880A" fill="url(#gCertAmber)" strokeWidth={2} connectNulls={false} />
           </AreaChart>
         </ResponsiveContainer>
-
-        <div className="chart-legend-custom">
-          <span className="legend-chip">
-            <span className="legend-swatch" style={{ backgroundColor: COLORS.erbjuden_volym }} />
-            Erbjuden volym
-          </span>
-          <span className="legend-chip">
-            <span className="legend-swatch" style={{ backgroundColor: COLORS.aterstaende }} />
-            Likviditetsoversott
-          </span>
-          <span className="legend-chip">
-            <span className="legend-swatch" style={{ backgroundColor: COLORS.rantefri_inlaning }} />
-            Rantefri inlaning
-          </span>
+        <div className="chart-note">
+          Grafen omfattar ej aterforsakring av riksbankscertifikat eller finjusterade transaktioner. Kalla: Riksbanken.
         </div>
       </div>
-
-      <p className="source-note">
-        Grafen omfattar ej aterforsakring av riksbankscertifikat eller finjusterade transaktioner.
-        Likviditetsstallningen mot banksystemet kan darfor avvika fran vad som framgar av grafen.
-        Kalla: Riksbanken.
-      </p>
-    </section>
+    </div>
   );
 }
