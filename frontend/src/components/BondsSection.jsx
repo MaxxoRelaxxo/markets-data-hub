@@ -47,14 +47,12 @@ export default function BondsSection() {
       .then(setData);
   }, []);
 
-  if (!data) return null;
-
-  const filtered = data[bondType] || [];
+  const filtered = data ? (data[bondType] || []) : [];
   const sorted = [...filtered].sort((a, b) => a.date.localeCompare(b.date));
 
   const uniqueLans = useMemo(
     () => [...new Set(sorted.map((d) => d.lan))].sort(),
-    [sorted],
+    [bondType, data],
   );
   const colorMap = useMemo(
     () => Object.fromEntries(uniqueLans.map((l, i) => [l, PALETTE[i % PALETTE.length]])),
@@ -65,6 +63,8 @@ export default function BondsSection() {
   const avgBtc = sorted.length
     ? (sorted.reduce((s, d) => s + d.bid_to_cover, 0) / sorted.length)
     : 0;
+
+  if (!data) return null;
 
   return (
     <div>
