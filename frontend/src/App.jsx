@@ -17,7 +17,7 @@ const formatDate = (s) => {
 
 const TABS = [
   { id: "cert", label: "Riksbankscertifikat" },
-  { id: "gov", label: "Statsobligationer" },
+  { id: "gov", label: "Försäljning av Statsobligationer" },
   { id: "swestr", label: "Swestr" },
 ];
 
@@ -54,7 +54,7 @@ export default function App() {
                 <h1 className="header-title">Marknadsdata</h1>
               </div>
               <div className="header-meta">
-                Vecka {week} &middot; {now.getFullYear()} &middot;
+                Vecka {week} &middot; {now.getFullYear()}
               </div>
             </div>
             <div className="header-stats">

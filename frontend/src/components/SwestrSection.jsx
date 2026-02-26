@@ -58,13 +58,13 @@ export default function SwestrSection() {
           unit="mdkr"
         />
         <StatCard label="Transaktioner" value={String(latest.transactions ?? "\u2013")} />
-        <StatCard label="Rapportorer" value={String(latest.agents ?? "\u2013")} />
+        <StatCard label="Rapportörer" value={String(latest.agents ?? "\u2013")} />
       </div>
 
       <div className="sub-tabs">
         {[
-          { id: "over_tid", label: "SWESTR over tid" },
-          { id: "manad", label: "Senaste manaden" },
+          { id: "over_tid", label: "SWESTR över tid" },
+          { id: "manad", label: "Senaste månaden" },
           { id: "spread", label: "Avvikelse" },
         ].map((t) => (
           <button
@@ -110,7 +110,7 @@ export default function SwestrSection() {
             </AreaChart>
           </ResponsiveContainer>
           <div className="chart-note">
-            Sista december-notering ar exkluderad. Kalla: Riksbanken.
+            Sista notering för året är exkluderad. Källa: Riksbanken.
           </div>
         </div>
       )}
@@ -118,7 +118,7 @@ export default function SwestrSection() {
       {subTab === "manad" && (
         <div className="chart-card">
           <div className="chart-card-title">
-            SWESTR senaste manaden ({monthly[0]?.date?.slice(0, 7)})
+            SWESTR senaste månaden ({monthly[0]?.date?.slice(0, 7)})
           </div>
           <ResponsiveContainer width="100%" height={320}>
             <ComposedChart data={monthly} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
@@ -153,14 +153,15 @@ export default function SwestrSection() {
             </ComposedChart>
           </ResponsiveContainer>
           <div className="chart-note">
-            Faltet visar spridningen mellan nedre/ovre trimningsgrans och SWESTR-noteringen per dag. Kalla: Riksbanken.
+            Fältet visar spridningen mellan nedre/övre trimningsgräns och SWESTR-noteringen per dag.
+            Källa: Riksbanken.
           </div>
         </div>
       )}
 
       {subTab === "spread" && (
         <div className="chart-card">
-          <div className="chart-card-title">Avvikelse fran styrrantan</div>
+          <div className="chart-card-title">Avvikelse fran styrräntan</div>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={timeseries} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <defs>
@@ -187,7 +188,8 @@ export default function SwestrSection() {
             </AreaChart>
           </ResponsiveContainer>
           <div className="chart-note">
-            Positiva varden innebar att SWESTR noterar over styrrantan. Kalla: Riksbanken.
+            Positiva värden innebar att SWESTR noterar över styrräntan.
+            Källa: Riksbanken.
           </div>
         </div>
       )}
