@@ -16,7 +16,10 @@ from .assets.assets import (
     riksbank_certificate,
     sales_of_gov_bonds,
     get_swestr_values,
-    get_policy_rate_values
+    get_policy_rate_values,
+    mortgage_rates,
+    deposit_rates,
+    nfc_lending_rates,
 )
 from .assets.frontend import build_frontend
 
@@ -82,6 +85,9 @@ defs = Definitions(
         get_swestr_values,
         get_policy_rate_values,
         build_frontend,
+        mortgage_rates,
+        deposit_rates,
+        nfc_lending_rates
     ],
     jobs=[riksbank_certificate_job, sales_of_gov_bonds_job, swestr_job, policy_rate_job, build_frontend_job],
     schedules=[

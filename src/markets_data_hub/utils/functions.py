@@ -4,6 +4,8 @@ import logging
 import re
 import time
 import unicodedata
+import itertools
+import polars as pl
 from datetime import datetime
 from typing import Any
 from dagster import ConfigurableResource
@@ -364,3 +366,65 @@ class SweaApiResource(ConfigurableResource):
         response.raise_for_status()
 
         return response.json()
+    
+
+### Get rates from SCB
+
+BASE_URL = "https://statistikdatabasen.scb.se/api/v2/tables"
+
+def fetch_scb(
+    table_id: str,
+    selection: dict[str, list[str]],
+    lang: str = "sv",
+    output_format: str = "json-stat2",
+) -> pl.DataFrame:
+    """Fetch data from SCB PxWeb API v2."""
+    params = {"lang": lang, "outputFormat": output_format}
+    for var, values in selection.items():
+        params[f"valueCodes[{var}]"] = ",".join(values)
+
+    url = f"{BASE_URL}/{table_id}/data"
+    resp = requests.get(url, params=params)
+    resp.raise_for_status()
+    return _jsonstat2_to_df(resp.json())
+
+
+def inspect_scb_table(table_id: str, lang: str = "sv") -> dict:
+    """Print available variables and values for a table."""
+    url = f"{BASE_URL}/{table_id}"
+    resp = requests.get(url, params={"lang": lang})
+    resp.raise_for_status()
+    meta = resp.json()
+
+    print(f"Table: {meta.get('label', '')}\n")
+    for var in meta.get("variables", []):
+        print(f"  Variable: {var['id']} – {var['label']}")
+        for code, label in zip(var["values"], var["valueLabels"]):
+            print(f"    {code}: {label}")
+        print()
+
+    return meta
+
+
+def _jsonstat2_to_df(data: dict) -> pl.DataFrame:
+    """Convert JSON-stat2 format to a Polars DataFrame."""
+    dims = data["id"]
+    labels = data["dimension"]
+    values = data["value"]
+
+    dim_values = []
+    for dim in dims:
+        cats = labels[dim]["category"]
+        sorted_keys = (
+            sorted(cats["index"], key=lambda k: cats["index"][k])
+            if "index" in cats
+            else list(cats["label"].keys())
+        )
+        dim_values.append([cats["label"][k] for k in sorted_keys])
+
+    import itertools
+    combos = list(itertools.product(*dim_values))
+    columns = {dim: [row[i] for row in combos] for i, dim in enumerate(dims)}
+    columns["value"] = values
+
+    return pl.DataFrame(columns)
