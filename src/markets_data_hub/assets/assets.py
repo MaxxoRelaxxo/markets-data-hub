@@ -4,9 +4,10 @@ from ..utils.functions import (
     scrape_rb_cert_auctions,
     transform_record, 
     scrape_riksbank_auctions, 
-    convert_record, 
+    convert_record,
+    fetch_scb,
     SwestrApiResource,
-    SweaApiResource
+    SweaApiResource,
 )
 from ..assets.schemas import (
     RbCertAuctionResult,
@@ -161,6 +162,87 @@ def get_policy_rate_values(context: AssetExecutionContext, swea_api: SweaApiReso
     return MaterializeResult(
         metadata={
             "num_records": len(df),
+            "path": str(output_path),
+        }
+    )
+
+
+@asset(group_name="Real_economy")
+def mortgage_rates(context: AssetExecutionContext) -> MaterializeResult:
+    """Get interest rates for the real economy."""
+    result = fetch_scb(
+        table_id="TAB5783",
+        selection={
+            "ContentsCode": ["000004ZW"],
+            "Referenssektor": ["1", "1.1", "1.2"],
+            "Motpartssektor": ["2c"],
+            "Avtal": ["0200", "0100"],
+            "Rantebindningstid": ["*"],
+            "Tid": ["*"],
+        }
+    )
+    
+    output_path = DATA_DIR / "mortgage_rates.parquet"
+    result.write_parquet(output_path)
+    context.log.info(f"Writing {len(result)} rows to {output_path}")
+
+    return MaterializeResult(
+        metadata={
+            "num_records": len(result),
+            "path": str(output_path),
+        }
+    )
+
+
+@asset(group_name="Real_economy")
+def deposit_rates(context: AssetExecutionContext) -> MaterializeResult:
+    """Get interest rates for the real economy."""
+    result = fetch_scb(
+        table_id="TAB4386",
+        selection={
+            "ContentsCode": ["000000N3"],
+            "Referenssektor": ["1.1b"],
+            "Motpartssektor": ["2"],
+            "Avtal": ["0200", "0100"],
+            "Rantebindningstid": ["*"],
+            "Tid": ["*"],
+        }
+    )
+    
+    output_path = DATA_DIR / "deposit_rates.parquet"
+    result.write_parquet(output_path)
+    context.log.info(f"Writing {len(result)} rows to {output_path}")
+
+    return MaterializeResult(
+        metadata={
+            "num_records": len(result),
+            "path": str(output_path),
+        }
+    )
+
+
+@asset(group_name="Real_economy")
+def nfc_lending_rates(context: AssetExecutionContext) -> MaterializeResult:
+    """Get interest rates for the real economy."""
+    result = fetch_scb(
+        table_id="TAB3406",
+        selection={
+            "BranschKrita": ["0","1","2","3","4","5","6","7","8","9","10","11","99"],
+            "FtgStrlKrita": ["0","1","2","3","4"],
+            "UrspRant": ["0","1"],
+            "AterRant": ["0","1"],
+            "ContentsCode": ["000003FR","000006WB"],
+            "Tid": ["*"],
+        }
+    )
+    
+    output_path = DATA_DIR / "nfc_lending_rates.parquet"
+    result.write_parquet(output_path)
+    context.log.info(f"Writing {len(result)} rows to {output_path}")
+
+    return MaterializeResult(
+        metadata={
+            "num_records": len(result),
             "path": str(output_path),
         }
     )
