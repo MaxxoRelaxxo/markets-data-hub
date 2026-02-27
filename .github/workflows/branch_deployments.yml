@@ -3,6 +3,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 
+permissions:
+  contents: read
+  pull-requests: read
+
 concurrency:
   # Cancel in-progress deploys to same branch
   group: ${{ github.ref }}/branch_deployments
@@ -18,6 +22,8 @@ jobs:
   dagster_cloud_default_deploy:
     name: Dagster Serverless Deploy
     runs-on: ubuntu-22.04
+    # Only run for PRs from branches in this repo, not from forks
+    if: github.event.pull_request.head.repo.full_name == github.repository
     outputs:
       build_info: ${{ steps.parse-workspace.outputs.build_info }}
 
@@ -53,7 +59,9 @@ jobs:
   dagster_cloud_docker_deploy:
     name: Docker Deploy
     runs-on: ubuntu-22.04
-    if: needs.dagster_cloud_default_deploy.outputs.build_info
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      needs.dagster_cloud_default_deploy.outputs.build_info
     needs: dagster_cloud_default_deploy
     strategy:
       fail-fast: false
