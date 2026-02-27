@@ -1,0 +1,5 @@
+# Require approval from the repository owner for all changes.
+# When this repo is public, any outside contributor's PR must be
+# reviewed and approved by a code owner before it can be merged.
+
+* @MaxxoRelaxxo
