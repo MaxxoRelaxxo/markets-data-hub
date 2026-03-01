@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import CertificateSection from "./components/CertificateSection";
 import BondsSection from "./components/BondsSection";
 import SwestrSection from "./components/SwestrSection";
+import ScbRatesSection from "./components/ScbRatesSection";
 
 function getWeekNumber(d) {
   const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -19,6 +20,7 @@ const TABS = [
   { id: "cert", label: "Riksbankscertifikat" },
   { id: "gov", label: "Försäljning av Statsobligationer" },
   { id: "swestr", label: "Swestr" },
+  { id: "scb", label: "In-och utlåningsräntor" },
 ];
 
 export default function App() {
@@ -95,6 +97,7 @@ export default function App() {
         {activeTab === "cert" && <CertificateSection />}
         {activeTab === "gov" && <BondsSection />}
         {activeTab === "swestr" && <SwestrSection />}
+        {activeTab === "scb" && <ScbRatesSection />}
 
         <div className="footer">
           <div>Publicerat: {now.toISOString().slice(0, 10)}</div>

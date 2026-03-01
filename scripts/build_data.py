@@ -200,9 +200,127 @@ def build_swestr():
     _dump({"latest": latest, "timeseries": timeseries, "monthly": monthly}, "swestr_data.json")
 
 
+def build_scb_rates():
+    """Build SCB interest-rate data: mortgage rates, deposit rates, and NFC lending rates."""
+    df_policy = pl.read_parquet(DATA_DIR / "policy_rate_values.parquet")
+
+    # --- Mortgage rates ---
+    df_mortgage = (
+        pl.read_parquet(DATA_DIR / "mortgage_rates.parquet")
+        .filter(
+            (pl.col("Referenssektor") == "MFI")
+            & (pl.col("Avtal") == "nya och omförhandlade avtal")
+            & pl.col("Rantebindningstid").is_in([
+                "T.o.m. 3 månader (rörligt)",
+                "Över 3 månader - 1 år",
+                "Över ett till fem år (1-5 år)",
+                "Över fem år",
+            ])
+        )
+        .select(["Rantebindningstid", "Tid", "value"])
+        .with_columns(
+            pl.col("Tid").str.replace("M", "-").str.to_date("%Y-%m")
+        )
+        .rename({"Tid": "date", "Rantebindningstid": "rate"})
+    )
+
+    # --- Deposit rates ---
+    df_deposit = (
+        pl.read_parquet(DATA_DIR / "deposit_rates.parquet")
+        .filter(
+            (pl.col("Avtal") == "nya och omförhandlade avtal")
+            & pl.col("Rantebindningstid").is_in([
+                "2 Med villkor",
+                "3 Avistakonton",
+            ])
+        )
+        .select(["Rantebindningstid", "Tid", "value"])
+        .with_columns(
+            pl.col("Tid").str.replace("M", "-").str.to_date("%Y-%m"),
+            pl.col("Rantebindningstid").str.replace(r"^\d+\s*", ""),
+        )
+        .rename({"Tid": "date", "Rantebindningstid": "rate"})
+    )
+
+    # --- Policy rate as a line ---
+    df_rates = (
+        df_policy
+        .with_columns(pl.lit("Styrränta").alias("rate"))
+        .select(["rate", "date", "value"])
+    )
+    df_rates = pl.concat([df_rates, df_mortgage, df_deposit]).filter(
+        pl.col("date") >= date(2006, 1, 1)
+    )
+
+    household_rates = [
+        {
+            "date": r["date"].isoformat() if isinstance(r["date"], date) else str(r["date"]),
+            "rate": r["rate"],
+            "value": r["value"],
+        }
+        for r in df_rates.sort("date", "rate").iter_rows(named=True)
+    ]
+
+    # --- NFC lending rates ---
+    df_nfc = (
+        pl.read_parquet(DATA_DIR / "nfc_lending_rates.parquet")
+        .with_columns(
+            pl.col("Tid").str.replace("M", "-").str.to_date("%Y-%m"),
+            pl.col("BranschKrita", "FtgStrlKrita", "UrspRant", "AterRant")
+            .str.replace(r"^\d+\.\s*", "")
+            .str.replace(r"^\d+\s*", ""),
+        )
+        .filter(
+            pl.col("value").is_not_null()
+            & (pl.col("BranschKrita") != "Totalt, samtliga brancher")
+            & (pl.col("FtgStrlKrita") != "Totalt, samtliga företagsstorlekar")
+        )
+    )
+
+    MEDEL = "Ränta, medel, utestående lån i SEK per låntagare, procent"
+    nfc_rates = [
+        {
+            "date": r["Tid"].isoformat() if isinstance(r["Tid"], date) else str(r["Tid"]),
+            "branch": r["BranschKrita"],
+            "size": r["FtgStrlKrita"],
+            "measure": r["ContentsCode"],
+            "value": r["value"],
+        }
+        for r in df_nfc.filter(
+            (pl.col("BranschKrita") != "Bostadsrättsföreningar")
+            & (pl.col("ContentsCode") == MEDEL)
+        ).sort("Tid", "BranschKrita").iter_rows(named=True)
+    ]
+
+    # BRF subset
+    MEDIAN = "Ränta, median, utestående lån i SEK per låntagare, procent"
+    brf_rates = [
+        {
+            "date": r["Tid"].isoformat() if isinstance(r["Tid"], date) else str(r["Tid"]),
+            "size": r["FtgStrlKrita"],
+            "measure": r["ContentsCode"],
+            "value": r["value"],
+        }
+        for r in df_nfc.filter(
+            (pl.col("BranschKrita") == "Bostadsrättsföreningar")
+            & pl.col("ContentsCode").is_in([MEDEL, MEDIAN])
+        ).sort("Tid", "FtgStrlKrita").iter_rows(named=True)
+    ]
+
+    _dump(
+        {
+            "household_rates": household_rates,
+            "nfc_rates": nfc_rates,
+            "brf_rates": brf_rates,
+        },
+        "scb_rates_data.json",
+    )
+
+
 if __name__ == "__main__":
     print("Building frontend data...")
     build_cert()
     build_bonds()
     build_swestr()
+    build_scb_rates()
     print("Done.")
