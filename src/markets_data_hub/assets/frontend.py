@@ -11,8 +11,16 @@ BUILD_SCRIPT = REPO_ROOT / "scripts" / "build_data.py"
 
 
 @asset(
-    group_name="Market_operations",
-    deps=["riksbank_certificate", "sales_of_gov_bonds", "get_swestr_values", "get_policy_rate_values"],
+    group_name="App",
+    deps=[
+        "riksbank_certificate",
+        "sales_of_gov_bonds",
+        "get_swestr_values",
+        "get_policy_rate_values",
+        "mortgage_rates",
+        "deposit_rates",
+        "nfc_lending_rates",
+    ],
 )
 def build_frontend(context: AssetExecutionContext) -> MaterializeResult:
     """Build frontend data files.

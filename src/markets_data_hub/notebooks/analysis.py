@@ -35,7 +35,19 @@ def _(Path):
     ref_rgk = str(_data_dir / "ref_rgk.xlsx")
     swestr = str(_data_dir / "swestr_values.parquet")
     policy_rate = str(_data_dir / "policy_rate_values.parquet")
-    return policy_rate, rb_cert, rb_gov, ref_rgk, swestr
+    mortgage_rates = str(_data_dir / "mortgage_rates.parquet")
+    deposit_rates = str(_data_dir / "deposit_rates.parquet")
+    nfc_lending_rates = str(_data_dir / "nfc_lending_rates.parquet")
+    return (
+        deposit_rates,
+        mortgage_rates,
+        nfc_lending_rates,
+        policy_rate,
+        rb_cert,
+        rb_gov,
+        ref_rgk,
+        swestr,
+    )
 
 
 @app.cell
@@ -461,7 +473,7 @@ def _(pl, policy_rate, swestr):
             (pl.col.rate - pl.col.policy_rate).alias("diff_swestr")
         )
     )
-    return (df_swestr,)
+    return df_policy_rate, df_swestr
 
 
 @app.cell
@@ -653,6 +665,181 @@ def _(alt, df_swestr, mo, pl):
         ])
 
     swestr_band()
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(date, deposit_rates, df_policy_rate, mortgage_rates, pl):
+    df_mortgage_rates = (
+        pl.read_parquet(mortgage_rates)
+        .filter(
+            (pl.col.Referenssektor == "MFI")
+            & (pl.col.Avtal == "nya och omförhandlade avtal")
+            & (pl.col.Rantebindningstid.is_in([
+                "T.o.m. 3 månader (rörligt)",
+                "Över 3 månader - 1 år",
+                "Över ett till fem år (1-5 år)",
+                "Över fem år"
+            ]))
+        )
+        .select([
+          "Rantebindningstid",
+          "Tid",
+          "value"
+        ])
+        .with_columns(
+            pl.col("Tid").str.replace("M", "-").str.to_date("%Y-%m")
+        )
+        .rename({
+            "Tid" : "date",
+            "Rantebindningstid" : "rate"
+        })
+    )
+
+    df_deposit_rates = (
+        pl.read_parquet(deposit_rates)
+        .filter(
+            (pl.col.Avtal == "nya och omförhandlade avtal")
+            & (pl.col.Rantebindningstid.is_in([
+                "2 Med villkor",
+                "3 Avistakonton",
+            ]))
+        )
+        .select([
+          "Rantebindningstid",
+          "Tid",
+          "value"
+        ])
+        .with_columns(
+            pl.col("Tid").str.replace("M", "-").str.to_date("%Y-%m"),
+            pl.col("Rantebindningstid").str.replace(r"^\d+", "")
+        )
+        .rename({
+            "Tid" : "date",
+            "Rantebindningstid" : "rate"
+        })
+    )
+
+    df_rates = (
+        df_policy_rate
+        .with_columns(
+            pl.lit("Styrränta").alias("rate")
+        )
+        .select([
+            "rate",
+            "date",
+            "value"
+        ])
+    )
+    df_rates = pl.concat([df_rates, df_mortgage_rates, df_deposit_rates]).filter(pl.col.date >= date(2006,1,1))
+    df_rates
+    return (df_rates,)
+
+
+@app.cell
+def _(alt, df_rates):
+    rates_plot = (
+        alt.Chart(df_rates)
+        .mark_line()
+        .encode(
+            x=alt.X(
+                "date:T",
+                axis=alt.Axis(title="", format="%Y", tickCount="year")
+            ),
+            y=alt.Y(
+                "value:Q",
+                axis=alt.Axis(title=""),
+            ),
+            color=alt.Color(
+                "rate:N",)
+        )
+        .properties(
+            title=alt.Title(
+                text="MFI:s inlåning-och bolåneräntor till hushållen, nya avtal",
+                fontSize=16,
+            ),
+            width="container",
+            height=400,
+        )
+        # .configure_legend(
+        #     columns=3,
+        #     symbolType="square",
+        #     symbolSize=100,
+        # )
+    )
+    rates_plot
+    return
+
+
+@app.cell
+def _(nfc_lending_rates, pl):
+    df_nfc_lending_rates = (
+        pl.read_parquet(nfc_lending_rates)
+        .with_columns(
+            pl.col("Tid").str.replace("M", "-").str.to_date("%Y-%m"),
+            pl.col("BranschKrita", "FtgStrlKrita", "UrspRant", "AterRant")
+              .str.replace(r"^\d+\.\s*", "")
+              .str.replace(r"^\d+\s*", "")
+        )
+        .filter(
+            (pl.col.value.is_not_null())
+            & (pl.col("BranschKrita") != "Totalt, samtliga brancher")
+            & (pl.col("FtgStrlKrita") != "Totalt, samtliga företagsstorlekar")
+        )
+    )
+
+    MEDEL = "Ränta, medel, utestående lån i SEK per låntagare, procent"
+    MEDIAN = "Ränta, median, utestående lån i SEK per låntagare, procent"
+
+    df_nfc_lending_rates
+    return MEDEL, MEDIAN, df_nfc_lending_rates
+
+
+@app.cell
+def _(MEDEL, alt, df_nfc_lending_rates, pl):
+    chart_branscher = (
+        alt.Chart(df_nfc_lending_rates.filter(
+            (pl.col("BranschKrita") != "Bostadsrättsföreningar")
+            & (pl.col("ContentsCode") == MEDEL)
+        ))
+        .mark_line()
+        .encode(
+            x=alt.X("Tid:T", title=None),
+            y=alt.Y("value:Q", title="Ränta (%)"),
+            color=alt.Color("FtgStrlKrita:N", title="Företagsstorlek"),
+            facet=alt.Facet("BranschKrita:N", columns=3, title=None),
+            tooltip=["Tid:T", "FtgStrlKrita:N", "value:Q"],
+        )
+        .properties(width=220, height=150, title="Ränta per bransch (medel)")
+        .resolve_scale(y="independent")
+    )
+    chart_branscher
+    return
+
+
+@app.cell
+def _(MEDEL, MEDIAN, alt, df_nfc_lending_rates, pl):
+    chart_brf = (
+        alt.Chart(df_nfc_lending_rates.filter(
+            (pl.col("BranschKrita") == "Bostadsrättsföreningar")
+            & (pl.col("ContentsCode").is_in([MEDEL, MEDIAN]))
+        ))
+        .mark_line()
+        .encode(
+            x=alt.X("Tid:T", title=None),
+            y=alt.Y("value:Q", title="Ränta (%)"),
+            color=alt.Color("FtgStrlKrita:N", title="Företagsstorlek"),
+            strokeDash=alt.StrokeDash("ContentsCode:N", title="Mått"),
+            tooltip=["Tid:T", "FtgStrlKrita:N", "ContentsCode:N", "value:Q"],
+        )
+        .properties(width=500, height=300, title="Bostadsrättsföreningar (medel vs median)")
+    )
+    chart_brf
     return
 
 
