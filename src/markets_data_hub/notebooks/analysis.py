@@ -780,8 +780,66 @@ def _(alt, df_rates):
 def _(nfc_lending_rates, pl):
     df_nfc_lending_rates = (
         pl.read_parquet(nfc_lending_rates)
+        .with_columns(
+            pl.col("Tid").str.replace("M", "-").str.to_date("%Y-%m"),
+            pl.col("BranschKrita", "FtgStrlKrita", "UrspRant", "AterRant")
+              .str.replace(r"^\d+\.\s*", "")
+              .str.replace(r"^\d+\s*", "")
+        )
+        .filter(
+            (pl.col.value.is_not_null())
+            & (pl.col("BranschKrita") != "Totalt, samtliga brancher")
+            & (pl.col("FtgStrlKrita") != "Totalt, samtliga företagsstorlekar")
+        )
     )
+
+    MEDEL = "Ränta, medel, utestående lån i SEK per låntagare, procent"
+    MEDIAN = "Ränta, median, utestående lån i SEK per låntagare, procent"
+
     df_nfc_lending_rates
+    return MEDEL, MEDIAN, df_nfc_lending_rates
+
+
+@app.cell
+def _(MEDEL, alt, df_nfc_lending_rates, pl):
+    chart_branscher = (
+        alt.Chart(df_nfc_lending_rates.filter(
+            (pl.col("BranschKrita") != "Bostadsrättsföreningar")
+            & (pl.col("ContentsCode") == MEDEL)
+        ))
+        .mark_line()
+        .encode(
+            x=alt.X("Tid:T", title=None),
+            y=alt.Y("value:Q", title="Ränta (%)"),
+            color=alt.Color("FtgStrlKrita:N", title="Företagsstorlek"),
+            facet=alt.Facet("BranschKrita:N", columns=3, title=None),
+            tooltip=["Tid:T", "FtgStrlKrita:N", "value:Q"],
+        )
+        .properties(width=220, height=150, title="Ränta per bransch (medel)")
+        .resolve_scale(y="independent")
+    )
+    chart_branscher
+    return
+
+
+@app.cell
+def _(MEDEL, MEDIAN, alt, df_nfc_lending_rates, pl):
+    chart_brf = (
+        alt.Chart(df_nfc_lending_rates.filter(
+            (pl.col("BranschKrita") == "Bostadsrättsföreningar")
+            & (pl.col("ContentsCode").is_in([MEDEL, MEDIAN]))
+        ))
+        .mark_line()
+        .encode(
+            x=alt.X("Tid:T", title=None),
+            y=alt.Y("value:Q", title="Ränta (%)"),
+            color=alt.Color("FtgStrlKrita:N", title="Företagsstorlek"),
+            strokeDash=alt.StrokeDash("ContentsCode:N", title="Mått"),
+            tooltip=["Tid:T", "FtgStrlKrita:N", "ContentsCode:N", "value:Q"],
+        )
+        .properties(width=500, height=300, title="Bostadsrättsföreningar (medel vs median)")
+    )
+    chart_brf
     return
 
 
