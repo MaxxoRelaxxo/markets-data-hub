@@ -40,14 +40,13 @@ export default function ScbRatesSection() {
     <div>
       <div className="section-header">
         <div className="section-accent" />
-        <h2 className="section-title">Realekonomiska räntor</h2>
-        <p className="section-sub">SCB:s räntestatistik</p>
+        <h2 className="section-title">Räntor till hushåll och företag</h2>
       </div>
 
       <div className="sub-tabs">
         {[
           { id: "household", label: "Hushållsräntor" },
-          { id: "nfc", label: "Företagsutlåning" },
+          { id: "nfc", label: "Företagsräntor" },
           { id: "brf", label: "Bostadsrättsföreningar" },
         ].map((t) => (
           <button
@@ -119,7 +118,7 @@ function HouseholdChart({ data }) {
         </LineChart>
       </ResponsiveContainer>
       <div className="chart-note">
-        Källa: SCB, Riksbanken.
+        Källa: Finansmarknadsstatistik SCB, Riksbanken
       </div>
     </div>
   );
@@ -152,7 +151,7 @@ function NfcChart({ data }) {
   return (
     <div className="chart-card">
       <div className="chart-card-head">
-        <div className="chart-card-title">Ränta per bransch (medel)</div>
+        <div className="chart-card-title">Ränta per bransch och företagsstorlek</div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
           {branches.map((b) => (
             <button
@@ -200,7 +199,7 @@ function NfcChart({ data }) {
         </LineChart>
       </ResponsiveContainer>
       <div className="chart-note">
-        Källa: SCB.
+        Källa: KRITA SCB
       </div>
     </div>
   );
@@ -269,7 +268,7 @@ function BrfChart({ data }) {
         </LineChart>
       </ResponsiveContainer>
       <div className="chart-note">
-        Källa: SCB.
+        Källa: KRITA SCB
       </div>
     </div>
   );

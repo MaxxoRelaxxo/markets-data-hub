@@ -20,7 +20,7 @@ const TABS = [
   { id: "cert", label: "Riksbankscertifikat" },
   { id: "gov", label: "Försäljning av Statsobligationer" },
   { id: "swestr", label: "Swestr" },
-  { id: "scb", label: "SCB Räntor" },
+  { id: "scb", label: "In-och utlåningsräntor" },
 ];
 
 export default function App() {
