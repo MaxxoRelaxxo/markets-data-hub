@@ -96,3 +96,9 @@ The project deploys automatically to [Dagster Cloud Serverless](https://dagster.
 
 - **Push to main** -- production deploy (`deploy.yml`)
 - **Push to feature branch** -- branch deploy (`branch_deployments.yml`)
+
+## TODO
+
+- Update README
+- Add an export of data
+- API to access data for Riksbank certificate auctions and Sales of government bond
