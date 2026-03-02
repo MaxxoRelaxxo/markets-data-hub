@@ -14,7 +14,7 @@ function BondTooltip({ active, payload }) {
     <div className="tt">
       <div className="tt-label">{d.date}</div>
       <div className="tt-row">
-        <span className="tt-name">Lan:</span>
+        <span className="tt-name">Lån:</span>
         <span className="tt-val">{d.lan}</span>
       </div>
       <div className="tt-row">
@@ -127,13 +127,29 @@ export default function BondsSection() {
           {uniqueLans.map((lan) => (
             <span key={lan} className="legend-item">
               <span className="legend-dot" style={{ background: colorMap[lan] }} />
-              Lan {lan}
+              Lån {lan}
             </span>
           ))}
         </div>
 
         <div className="chart-note">
-          Misslyckade auktioner (tilldelad volym = 0) ar exkluderade. Källa: Riksbanken/Riksgalden.
+          Misslyckade auktioner (tilldelad volym = 0) ar exkluderade. <br />
+          Källa: Riksbanken/Riksgalden.
+        </div>
+      
+
+      <div className="info-box">
+        <div className="info-box-title">Om SWESTR</div>
+        <p>
+          SWESTR (Swedish Short-Term Rate) är en referensränta som publiceras dagligen av Riksbanken.
+          Den mäter den effektiva övernatträntan på den svenska penningmarknaden, baserad på faktiska
+          transaktioner i svenska kronor.
+        </p>
+        <p>
+          SWESTR används som riktmärke för finansiella kontrakt och instrument, och speglar hur nära
+          marknadsräntan ligger Riksbankens styrränta. En liten positiv avvikelse är normalt —
+          en stor eller ihållande avvikelse kan signalera stress på penningmarknaden.
+        </p>
         </div>
       </div>
     </div>

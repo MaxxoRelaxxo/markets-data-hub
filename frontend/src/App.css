@@ -445,3 +445,29 @@ body {
     text-align: center;
   }
 }
+
+.info-box {
+  margin-top: 24px;
+  padding: 20px 24px;
+  background: var(--card-bg, #f8f9fa);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 10px;
+}
+
+.info-box-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.info-box p {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text, #374151);
+  margin: 0 0 10px;
+}
+
+.info-box p:last-child { margin-bottom: 0; }
