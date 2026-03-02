@@ -139,16 +139,20 @@ export default function BondsSection() {
       
 
       <div className="info-box">
-        <div className="info-box-title">Om SWESTR</div>
+        <div className="info-box-title">Om försäljning av statsobligationer</div>
         <p>
-          SWESTR (Swedish Short-Term Rate) är en referensränta som publiceras dagligen av Riksbanken.
-          Den mäter den effektiva övernatträntan på den svenska penningmarknaden, baserad på faktiska
-          transaktioner i svenska kronor.
+          Riksbanken beslutade i februari 2023 att börja sälja statsobligationer 
+          från april samma år, med efterföljande beslut om ökad försäljningstakt i 
+          juni 2023 och februari 2024. Syftet är att främja välfungerande marknader 
+          och minska finansiella risker på balansräkningen utan att störa inflationsmålet 
+          på 2 procent. Till följd av detta minskar obligationsinnehavet snabbare än vad 
+          enbart förfall skulle innebära.
         </p>
         <p>
-          SWESTR används som riktmärke för finansiella kontrakt och instrument, och speglar hur nära
-          marknadsräntan ligger Riksbankens styrränta. En liten positiv avvikelse är normalt —
-          en stor eller ihållande avvikelse kan signalera stress på penningmarknaden.
+          Försäljningarna sker via återkommande auktioner där Riksbankens penningpolitiska 
+          motparter och Riksgäldskontorets återförsäljare kan delta. Investerare som vill 
+          delta lägger bud via de motparter som anmält intresse. Obligationerna tilldelas 
+          de budgivare som lämnar bäst bud.
         </p>
         </div>
       </div>
