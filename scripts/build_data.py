@@ -242,9 +242,12 @@ def build_scb_rates():
         .rename({"Tid": "date", "Rantebindningstid": "rate"})
     )
 
-    # --- Policy rate as a line ---
+    # --- Policy rate as a line (resample daily → monthly to match mortgage/deposit) ---
     df_rates = (
         df_policy
+        .sort("date")
+        .group_by_dynamic("date", every="1mo")
+        .agg(pl.col("value").last())
         .with_columns(pl.lit("Styrränta").alias("rate"))
         .select(["rate", "date", "value"])
     )

@@ -14,7 +14,7 @@ function BondTooltip({ active, payload }) {
     <div className="tt">
       <div className="tt-label">{d.date}</div>
       <div className="tt-row">
-        <span className="tt-name">Lan:</span>
+        <span className="tt-name">Lån:</span>
         <span className="tt-val">{d.lan}</span>
       </div>
       <div className="tt-row">
@@ -127,13 +127,33 @@ export default function BondsSection() {
           {uniqueLans.map((lan) => (
             <span key={lan} className="legend-item">
               <span className="legend-dot" style={{ background: colorMap[lan] }} />
-              Lan {lan}
+              Lån {lan}
             </span>
           ))}
         </div>
 
         <div className="chart-note">
-          Misslyckade auktioner (tilldelad volym = 0) ar exkluderade. Källa: Riksbanken/Riksgalden.
+          Misslyckade auktioner (tilldelad volym = 0) ar exkluderade. <br />
+          Källa: Riksbanken/Riksgalden.
+        </div>
+      
+
+      <div className="info-box">
+        <div className="info-box-title">Om försäljning av statsobligationer</div>
+        <p>
+          Riksbanken beslutade i februari 2023 att börja sälja statsobligationer 
+          från april samma år, med efterföljande beslut om ökad försäljningstakt i 
+          juni 2023 och februari 2024. Syftet är att främja välfungerande marknader 
+          och minska finansiella risker på balansräkningen utan att störa inflationsmålet 
+          på 2 procent. Till följd av detta minskar obligationsinnehavet snabbare än vad 
+          enbart förfall skulle innebära.
+        </p>
+        <p>
+          Försäljningarna sker via återkommande auktioner där Riksbankens penningpolitiska 
+          motparter och Riksgäldskontorets återförsäljare kan delta. Investerare som vill 
+          delta lägger bud via de motparter som anmält intresse. Obligationerna tilldelas 
+          de budgivare som lämnar bäst bud.
+        </p>
         </div>
       </div>
     </div>
