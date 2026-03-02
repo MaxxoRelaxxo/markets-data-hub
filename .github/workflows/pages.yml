@@ -6,6 +6,8 @@ on:
     paths:
       - "src/markets_data_hub/data/**"
       - "frontend/**"
+      - "scripts/build_data.py"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
