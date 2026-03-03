@@ -27,6 +27,7 @@ from .assets.assets import (
     nfc_lending_rates,
 )
 from .assets.frontend import build_frontend
+from .assets.sync import GitHubRepoResource, sync_data_to_github
 
 
 # ---------------------------------------------------------------------------
@@ -129,6 +130,29 @@ scb_data_job = define_asset_job(
     selection=AssetSelection.assets(mortgage_rates, deposit_rates, nfc_lending_rates),
 )
 
+# Sync jobs – fetch data and push Parquet to GitHub in one execution.
+# Assets not in the selection are treated as previously materialised.
+daily_sync_job = define_asset_job(
+    name="daily_sync_job",
+    selection=AssetSelection.assets(
+        get_swestr_values, get_policy_rate_values, sync_data_to_github,
+    ),
+)
+
+full_sync_job = define_asset_job(
+    name="full_sync_job",
+    selection=AssetSelection.assets(
+        riksbank_certificate,
+        sales_of_gov_bonds,
+        get_swestr_values,
+        get_policy_rate_values,
+        mortgage_rates,
+        deposit_rates,
+        nfc_lending_rates,
+        sync_data_to_github,
+    ),
+)
+
 
 # ---------------------------------------------------------------------------
 # Schedules
@@ -180,6 +204,27 @@ def scb_data_schedule(context: ScheduleEvaluationContext):
         yield RunRequest()
 
 
+# Sync schedules – fetch data + push Parquet to GitHub → triggers Pages deploy
+
+daily_sync_schedule = ScheduleDefinition(
+    name="daily_sync",
+    target=daily_sync_job,
+    cron_schedule="30 9 * * 1-5",  # Weekdays 09:30 (after API jobs)
+)
+
+full_sync_schedule = ScheduleDefinition(
+    name="full_sync_weekly",
+    target=full_sync_job,
+    cron_schedule="30 11 * * 5",  # Fridays 11:30 (after scraping jobs)
+)
+
+
+github_repo = GitHubRepoResource(
+    token=EnvVar("GITHUB_TOKEN"),
+    owner=EnvVar("GITHUB_OWNER"),
+    repo=EnvVar("GITHUB_REPO"),
+)
+
 defs = Definitions(
     assets=[
         riksbank_certificate,
@@ -190,6 +235,7 @@ defs = Definitions(
         mortgage_rates,
         deposit_rates,
         nfc_lending_rates,
+        sync_data_to_github,
     ],
     jobs=[
         riksbank_certificate_job,
@@ -198,6 +244,8 @@ defs = Definitions(
         policy_rate_job,
         build_frontend_job,
         scb_data_job,
+        daily_sync_job,
+        full_sync_job,
     ],
     schedules=[
         riksbank_certificate_schedule,
@@ -206,9 +254,12 @@ defs = Definitions(
         policy_rate_schedule,
         build_frontend_schedule,
         scb_data_schedule,
+        daily_sync_schedule,
+        full_sync_schedule,
     ],
     resources={
         "swestr_api": swestr_resource,
         "swea_api": swea_api,
+        "github_repo": github_repo,
     },
 )
