@@ -119,7 +119,7 @@ export default function SwestrSection() {
       {subTab === "manad" && (
         <div className="chart-card">
           <div className="chart-card-title">
-            SWESTR senaste månaden ({monthly[0]?.date?.slice(0, 7)})
+            SWESTR senaste 30 dagarna
           </div>
           <ResponsiveContainer width="100%" height={320}>
             <ComposedChart data={monthly} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
