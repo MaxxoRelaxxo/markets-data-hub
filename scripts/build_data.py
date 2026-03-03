@@ -182,12 +182,19 @@ def build_swestr():
         for r in df.iter_rows(named=True)
     ]
 
-    # Monthly data for latest month
+    # Monthly data – use latest month, but fall back to previous month if < 5 data points
     latest_date = df.tail(1)["date"][0]
     monthly_df = df.filter(
         (pl.col("date").dt.year() == latest_date.year)
         & (pl.col("date").dt.month() == latest_date.month)
     ).select(["date", "rate", "pctl12_5", "pctl87_5"])
+
+    if len(monthly_df) < 5:
+        prev = latest_date.replace(day=1) - __import__("datetime").timedelta(days=1)
+        monthly_df = df.filter(
+            (pl.col("date").dt.year() == prev.year)
+            & (pl.col("date").dt.month() == prev.month)
+        ).select(["date", "rate", "pctl12_5", "pctl87_5"])
 
     monthly = [
         {
