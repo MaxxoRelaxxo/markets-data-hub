@@ -79,7 +79,7 @@ export default function SwestrSection() {
 
       {subTab === "over_tid" && (
         <div className="chart-card">
-          <div className="chart-card-title">Styranta vs SWESTR</div>
+          <div className="chart-card-title">Styrränta vs SWESTR</div>
           <ResponsiveContainer width="100%" height={340}>
             <AreaChart data={timeseries} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <defs>
@@ -100,7 +100,7 @@ export default function SwestrSection() {
               <Tooltip content={<RateTooltip />} />
               <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
               <Area
-                type="monotone" dataKey="policy_rate" name="Styranta"
+                type="monotone" dataKey="policy_rate" name="Styrränta"
                 stroke="#B91E2B" fill="transparent" strokeWidth={1.5} strokeDasharray="5 3"
               />
               <Area
@@ -119,7 +119,7 @@ export default function SwestrSection() {
       {subTab === "manad" && (
         <div className="chart-card">
           <div className="chart-card-title">
-            SWESTR senaste månaden ({monthly[0]?.date?.slice(0, 7)})
+            SWESTR senaste 30 dagarna
           </div>
           <ResponsiveContainer width="100%" height={320}>
             <ComposedChart data={monthly} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
@@ -162,7 +162,7 @@ export default function SwestrSection() {
 
       {subTab === "spread" && (
         <div className="chart-card">
-          <div className="chart-card-title">Avvikelse fran styrräntan</div>
+          <div className="chart-card-title">Avvikelse från styrräntan</div>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={timeseries} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <defs>
@@ -183,13 +183,13 @@ export default function SwestrSection() {
               <Tooltip content={<RateTooltip />} />
               <ReferenceLine y={0} stroke="var(--muted)" strokeDasharray="3 2" />
               <Area
-                type="monotone" dataKey="diff" name="Diff SWESTR - Styranta"
+                type="monotone" dataKey="diff" name="Diff SWESTR - Styrränta"
                 stroke="#D4880A" fill="url(#gDiff)" strokeWidth={1.5}
               />
             </AreaChart>
           </ResponsiveContainer>
           <div className="chart-note">
-            Positiva värden innebar att SWESTR noterar över styrräntan. <br />
+            Positiva värden innebär att SWESTR noterar över styrräntan. <br />
             Källa: Riksbanken.
           </div>
         </div>

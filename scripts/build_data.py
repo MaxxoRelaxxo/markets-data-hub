@@ -2,7 +2,7 @@
 """Convert Parquet/Excel data to JSON for the React frontend."""
 
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import polars as pl
@@ -182,11 +182,11 @@ def build_swestr():
         for r in df.iter_rows(named=True)
     ]
 
-    # Monthly data for latest month
+    # Rolling 30-day window for recent data
     latest_date = df.tail(1)["date"][0]
+    cutoff = latest_date - timedelta(days=30)
     monthly_df = df.filter(
-        (pl.col("date").dt.year() == latest_date.year)
-        & (pl.col("date").dt.month() == latest_date.month)
+        pl.col("date") > pl.lit(cutoff)
     ).select(["date", "rate", "pctl12_5", "pctl87_5"])
 
     monthly = [
