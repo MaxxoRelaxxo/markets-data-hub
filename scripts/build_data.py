@@ -28,6 +28,7 @@ def _dump(obj, name):
 def build_cert():
     df = (
         pl.read_parquet(DATA_DIR / "rb_cert_auctions_result.parquet")
+        .filter(pl.col("Anbudsdag").dt.year() <= date.today().year)
         .sort("Anbudsdag")
         .with_columns(
             (pl.col("Erbjuden_volym") - pl.col("Tilldelad_volym"))
@@ -79,6 +80,7 @@ def build_cert():
             {
                 "date": d.isoformat() if isinstance(d, date) else str(d),
                 "erbjuden_volym": r["Erbjuden_volym"],
+                "tilldelad_volym": r["Tilldelad_volym"],
                 "aterstaende": r["Aterstaende"],
                 "rantefri_inlaning": ri,
             }
@@ -155,10 +157,11 @@ def build_swestr():
     )
     df = (
         df_swestr.filter(~pl.col("date").is_in(cut["last_dec"].implode()))
-        .join(df_policy, on="date")
+        .join(df_policy, on="date", how="left")
         .rename({"value": "policy_rate"})
-        .with_columns((pl.col("rate") - pl.col("policy_rate")).round(4).alias("diff"))
         .sort("date")
+        .with_columns(pl.col("policy_rate").forward_fill())
+        .with_columns((pl.col("rate") - pl.col("policy_rate")).round(4).alias("diff"))
     )
 
     last = df.tail(1).row(0, named=True)
@@ -237,7 +240,8 @@ def build_scb_rates():
         .select(["Rantebindningstid", "Tid", "value"])
         .with_columns(
             pl.col("Tid").str.replace("M", "-").str.to_date("%Y-%m"),
-            pl.col("Rantebindningstid").str.replace(r"^\d+\s*", ""),
+            pl.col("Rantebindningstid").str.replace(r"^\d+\s*", "")
+            .str.replace("Med villkor", "Inlåning med villkor"),
         )
         .rename({"Tid": "date", "Rantebindningstid": "rate"})
     )
@@ -251,8 +255,14 @@ def build_scb_rates():
         .with_columns(pl.lit("Styrränta").alias("rate"))
         .select(["rate", "date", "value"])
     )
+    # Sync all series to the same max date (use the earliest max date across non-policy series)
+    max_mortgage = df_mortgage["date"].max()
+    max_deposit = df_deposit["date"].max()
+    max_date = min(max_mortgage, max_deposit)
+
     df_rates = pl.concat([df_rates, df_mortgage, df_deposit]).filter(
-        pl.col("date") >= date(2006, 1, 1)
+        (pl.col("date") >= date(2006, 1, 1))
+        & (pl.col("date") <= max_date)
     )
 
     household_rates = [

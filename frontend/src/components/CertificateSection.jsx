@@ -37,7 +37,7 @@ export default function CertificateSection() {
 
   const chartData = timeseries.slice(-120).map((d) => ({
     date: d.date.slice(0, 7),
-    "Erbjuden volym": d.erbjuden_volym,
+    "Tilldelad volym": d.tilldelad_volym,
     "Likviditetsöverskott": d.aterstaende,
     "Räntefri inlåning": d.rantefri_inlaning,
   }));
@@ -53,7 +53,7 @@ export default function CertificateSection() {
       <div className="stat-row">
         <StatCard label="Erbjuden volym" value={fmt(l.erbjuden_volym)} unit="mdkr" delta={l.delta_erbjuden} />
         <StatCard label="Tilldelad volym" value={fmt(l.tilldelad_volym)} unit="mdkr" delta={l.delta_tilldelad} />
-        <StatCard label="Aterstande overskott" value={fmt(l.aterstaende)} unit="mdkr" delta={l.delta_aterstaende} />
+        <StatCard label="Återstående likviditetsöverskott" value={fmt(l.aterstaende)} unit="mdkr" delta={l.delta_aterstaende} />
         <StatCard label="Antal bud" value={String(l.antal_bud)} delta={l.delta_antal_bud} />
       </div>
 
@@ -72,7 +72,7 @@ export default function CertificateSection() {
             />
             <Tooltip content={<ChartTooltip />} />
             <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
-            <Bar dataKey="Erbjuden volym" stackId="stack" fill="#0071B9" fillOpacity={0.85} />
+            <Bar dataKey="Tilldelad volym" stackId="stack" fill="#0071B9" fillOpacity={0.85} />
             <Bar dataKey="Likviditetsöverskott" stackId="stack" fill="#B91E2B" fillOpacity={0.85} />
             <Bar dataKey="Räntefri inlåning" stackId="stack" fill="#D4880A" fillOpacity={0.85} radius={[3, 3, 0, 0]} />
           </BarChart>
