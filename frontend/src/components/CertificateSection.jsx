@@ -36,7 +36,7 @@ export default function CertificateSection() {
   const { latest: l, timeseries } = data;
 
   const chartData = timeseries.slice(-120).map((d) => ({
-    date: d.date.slice(0, 7),
+    date: d.date,
     "Tilldelad volym": d.tilldelad_volym,
     "Likviditetsöverskott": d.aterstaende,
     "Räntefri inlåning": d.rantefri_inlaning,

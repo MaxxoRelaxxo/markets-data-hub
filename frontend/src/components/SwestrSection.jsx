@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   ComposedChart, Line, Area, AreaChart, XAxis, YAxis, Tooltip, CartesianGrid,
   ReferenceLine, ResponsiveContainer, Legend,
@@ -36,6 +36,14 @@ export default function SwestrSection() {
 
   const last = timeseries[timeseries.length - 1];
   const prev = timeseries.length > 1 ? timeseries[timeseries.length - 2] : null;
+
+  const swestrTicks = useMemo(() => {
+    const dates = timeseries.map((d) => d.date);
+    const result = dates.filter((_, i) => i % 120 === 0);
+    const lastDate = dates[dates.length - 1];
+    if (result[result.length - 1] !== lastDate) result.push(lastDate);
+    return result;
+  }, [timeseries]);
 
   return (
     <div>
@@ -90,7 +98,7 @@ export default function SwestrSection() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" />
               <XAxis
-                dataKey="date" interval={120}
+                dataKey="date" ticks={swestrTicks}
                 tick={{ fontSize: 10, fill: "var(--muted)" }} tickLine={false} axisLine={false}
               />
               <YAxis
@@ -173,7 +181,7 @@ export default function SwestrSection() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" />
               <XAxis
-                dataKey="date" interval={120}
+                dataKey="date" ticks={swestrTicks}
                 tick={{ fontSize: 10, fill: "var(--muted)" }} tickLine={false} axisLine={false}
               />
               <YAxis
