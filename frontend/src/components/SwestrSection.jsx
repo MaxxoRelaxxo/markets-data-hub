@@ -39,6 +39,22 @@ export default function SwestrSection() {
       });
   }, []);
 
+  const timeseries = data?.timeseries ?? [];
+  const monthly = data?.monthly ?? [];
+  const latest = data?.latest ?? {};
+
+  const last = timeseries.length ? timeseries[timeseries.length - 1] : null;
+  const prev = timeseries.length > 1 ? timeseries[timeseries.length - 2] : null;
+
+  const swestrTicks = useMemo(() => {
+    if (!timeseries.length) return [];
+    const dates = timeseries.map((d) => d.date);
+    const result = dates.filter((_, i) => i % 120 === 0);
+    const lastDate = dates[dates.length - 1];
+    if (result[result.length - 1] !== lastDate) result.push(lastDate);
+    return result;
+  }, [timeseries]);
+
   if (error) {
     return (
       <div className="info-box">
@@ -56,9 +72,7 @@ export default function SwestrSection() {
     );
   }
 
-  const { latest, timeseries, monthly } = data;
-
-  if (!timeseries?.length) {
+  if (!timeseries.length) {
     return (
       <div className="info-box">
         <div className="info-box-title">Ingen data tillgänglig</div>
@@ -66,17 +80,6 @@ export default function SwestrSection() {
       </div>
     );
   }
-
-  const last = timeseries[timeseries.length - 1];
-  const prev = timeseries.length > 1 ? timeseries[timeseries.length - 2] : null;
-
-  const swestrTicks = useMemo(() => {
-    const dates = timeseries.map((d) => d.date);
-    const result = dates.filter((_, i) => i % 120 === 0);
-    const lastDate = dates[dates.length - 1];
-    if (result[result.length - 1] !== lastDate) result.push(lastDate);
-    return result;
-  }, [timeseries]);
 
   return (
     <div>
