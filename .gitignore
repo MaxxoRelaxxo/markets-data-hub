@@ -20,4 +20,3 @@ site/
 # Frontend build artifacts
 frontend/dist/
 frontend/node_modules/
-frontend/public/data/

@@ -23,6 +23,7 @@ function RateTooltip({ active, payload, label }) {
 
 export default function SwestrSection() {
   const [data, setData] = useState(null);
+  const [error, setError] = useState(false);
   const [subTab, setSubTab] = useState("over_tid");
 
   useEffect(() => {
@@ -32,13 +33,39 @@ export default function SwestrSection() {
         return r.json();
       })
       .then(setData)
-      .catch((err) => console.error("Failed to load SWESTR data:", err));
+      .catch((err) => {
+        console.error("Failed to load SWESTR data:", err);
+        setError(true);
+      });
   }, []);
 
-  if (!data) return null;
+  if (error) {
+    return (
+      <div className="info-box">
+        <div className="info-box-title">Kunde inte ladda SWESTR-data</div>
+        <p>Det gick inte att hämta data. Försök ladda om sidan.</p>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--muted)" }}>
+        Laddar SWESTR-data…
+      </div>
+    );
+  }
+
   const { latest, timeseries, monthly } = data;
 
-  if (!timeseries?.length) return null;
+  if (!timeseries?.length) {
+    return (
+      <div className="info-box">
+        <div className="info-box-title">Ingen data tillgänglig</div>
+        <p>SWESTR-tidsserien är tom. Data kan vara under uppdatering.</p>
+      </div>
+    );
+  }
 
   const last = timeseries[timeseries.length - 1];
   const prev = timeseries.length > 1 ? timeseries[timeseries.length - 2] : null;
