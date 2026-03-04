@@ -88,7 +88,7 @@ function HouseholdChart({ data }) {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" />
           <XAxis
             dataKey="date"
-            tickFormatter={(d) => d.slice(0, 4)}
+            tickFormatter={(d) => d.slice(0, 7)}
             interval={Math.max(1, Math.floor(pivoted.length / 10))}
             tick={{ fontSize: 10, fill: "var(--muted)" }}
             tickLine={false}
@@ -170,7 +170,7 @@ function NfcChart({ data }) {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" />
           <XAxis
             dataKey="date"
-            tickFormatter={(d) => d.slice(0, 4)}
+            tickFormatter={(d) => d.slice(0, 7)}
             interval={Math.max(1, Math.floor(pivoted.length / 8))}
             tick={{ fontSize: 10, fill: "var(--muted)" }}
             tickLine={false}
@@ -238,7 +238,7 @@ function BrfChart({ data }) {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" />
           <XAxis
             dataKey="date"
-            tickFormatter={(d) => d.slice(0, 4)}
+            tickFormatter={(d) => d.slice(0, 7)}
             interval={Math.max(1, Math.floor(pivoted.length / 10))}
             tick={{ fontSize: 10, fill: "var(--muted)" }}
             tickLine={false}
