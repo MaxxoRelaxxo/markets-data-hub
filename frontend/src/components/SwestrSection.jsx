@@ -27,12 +27,18 @@ export default function SwestrSection() {
 
   useEffect(() => {
     fetch("./data/swestr_data.json")
-      .then((r) => r.json())
-      .then(setData);
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(setData)
+      .catch((err) => console.error("Failed to load SWESTR data:", err));
   }, []);
 
   if (!data) return null;
   const { latest, timeseries, monthly } = data;
+
+  if (!timeseries?.length) return null;
 
   const last = timeseries[timeseries.length - 1];
   const prev = timeseries.length > 1 ? timeseries[timeseries.length - 2] : null;
@@ -56,7 +62,7 @@ export default function SwestrSection() {
       <div className="stat-row">
         <StatCard
           label="SWESTR"
-          value={latest.rate?.toFixed(3).replace(".", ",")}
+          value={latest.rate != null ? latest.rate.toFixed(3).replace(".", ",") : "\u2013"}
           unit="%"
           delta={prev ? parseFloat((last.rate - prev.rate).toFixed(4)) : undefined}
         />

@@ -35,8 +35,12 @@ export default function App() {
 
   useEffect(() => {
     fetch("./data/swestr_data.json")
-      .then((r) => r.json())
-      .then(setSwestrData);
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(setSwestrData)
+      .catch((err) => console.error("Failed to load SWESTR data:", err));
   }, []);
 
   const lastRate = swestrData?.latest?.rate;
