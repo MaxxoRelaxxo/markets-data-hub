@@ -3,6 +3,7 @@ import CertificateSection from "./components/CertificateSection";
 import BondsSection from "./components/BondsSection";
 import SwestrSection from "./components/SwestrSection";
 import ScbRatesSection from "./components/ScbRatesSection";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function getWeekNumber(d) {
   const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -98,10 +99,12 @@ export default function App() {
 
       {/* Content */}
       <main className="container" style={{ paddingBottom: 48 }}>
-        {activeTab === "cert" && <CertificateSection />}
-        {activeTab === "gov" && <BondsSection />}
-        {activeTab === "swestr" && <SwestrSection />}
-        {activeTab === "scb" && <ScbRatesSection />}
+        <ErrorBoundary key={activeTab}>
+          {activeTab === "cert" && <CertificateSection />}
+          {activeTab === "gov" && <BondsSection />}
+          {activeTab === "swestr" && <SwestrSection />}
+          {activeTab === "scb" && <ScbRatesSection />}
+        </ErrorBoundary>
 
         <div className="footer">
           <div>Publicerat: {now.toISOString().slice(0, 10)}</div>
