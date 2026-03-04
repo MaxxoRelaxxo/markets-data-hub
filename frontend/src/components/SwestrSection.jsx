@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import {
-  ComposedChart, Line, Area, AreaChart, XAxis, YAxis, Tooltip, CartesianGrid,
+  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid,
   ReferenceLine, ResponsiveContainer, Legend,
 } from "recharts";
 import StatCard from "./StatCard";
@@ -122,13 +122,7 @@ export default function SwestrSection() {
         <div className="chart-card">
           <div className="chart-card-title">Styrränta vs SWESTR</div>
           <ResponsiveContainer width="100%" height={340}>
-            <AreaChart data={timeseries} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-              <defs>
-                <linearGradient id="gSwestr" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#D4880A" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#D4880A" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
+            <LineChart data={timeseries} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" />
               <XAxis
                 dataKey="date" ticks={swestrTicks}
@@ -140,15 +134,15 @@ export default function SwestrSection() {
               />
               <Tooltip content={<RateTooltip />} />
               <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
-              <Area
+              <Line
                 type="monotone" dataKey="policy_rate" name="Styrränta"
-                stroke="#B91E2B" fill="transparent" strokeWidth={1.5} strokeDasharray="5 3"
+                stroke="#B91E2B" strokeWidth={1.5} strokeDasharray="5 3" dot={false}
               />
-              <Area
+              <Line
                 type="monotone" dataKey="rate" name="SWESTR"
-                stroke="#0071B9" fill="url(#gSwestr)" strokeWidth={1.5}
+                stroke="#0071B9" strokeWidth={1.5} dot={false}
               />
-            </AreaChart>
+            </LineChart>
           </ResponsiveContainer>
           <div className="chart-note">
             Sista notering för året är exkluderad. <br />
@@ -163,13 +157,7 @@ export default function SwestrSection() {
             SWESTR senaste 30 dagarna
           </div>
           <ResponsiveContainer width="100%" height={320}>
-            <ComposedChart data={monthly} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-              <defs>
-                <linearGradient id="gBand" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#0071B9" stopOpacity={0.2} />
-                  <stop offset="100%" stopColor="#0071B9" stopOpacity={0} />
-                </linearGradient>
-              </defs>
+            <LineChart data={monthly} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" />
               <XAxis
                 dataKey="date"
@@ -180,22 +168,23 @@ export default function SwestrSection() {
                 domain={["auto", "auto"]} width={55}
               />
               <Tooltip content={<RateTooltip />} />
-              <Area
-                type="monotone" dataKey="pctl87_5" name="Ovre percentil (87,5%)"
-                stroke="transparent" fill="#0071B9" fillOpacity={0.12}
+              <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
+              <Line
+                type="monotone" dataKey="pctl87_5" name="Övre percentil (87,5%)"
+                stroke="#0071B9" strokeWidth={1} strokeDasharray="4 2" dot={false} strokeOpacity={0.5}
               />
-              <Area
+              <Line
                 type="monotone" dataKey="pctl12_5" name="Nedre percentil (12,5%)"
-                stroke="transparent" fill="#fff" fillOpacity={1}
+                stroke="#0071B9" strokeWidth={1} strokeDasharray="4 2" dot={false} strokeOpacity={0.5}
               />
               <Line
                 type="monotone" dataKey="rate" name="SWESTR"
                 stroke="#0071B9" strokeWidth={2} dot={false}
               />
-            </ComposedChart>
+            </LineChart>
           </ResponsiveContainer>
           <div className="chart-note">
-            Fältet visar spridningen mellan nedre/övre trimningsgräns och SWESTR-noteringen per dag. <br />
+            Percentillinjerna visar spridningen mellan nedre/övre trimningsgräns och SWESTR-noteringen per dag. <br />
             Källa: Riksbanken.
           </div>
         </div>
@@ -205,13 +194,7 @@ export default function SwestrSection() {
         <div className="chart-card">
           <div className="chart-card-title">Avvikelse från styrräntan</div>
           <ResponsiveContainer width="100%" height={280}>
-            <AreaChart data={timeseries} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-              <defs>
-                <linearGradient id="gDiff" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#D4880A" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#D4880A" stopOpacity={0} />
-                </linearGradient>
-              </defs>
+            <LineChart data={timeseries} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" />
               <XAxis
                 dataKey="date" ticks={swestrTicks}
@@ -223,11 +206,11 @@ export default function SwestrSection() {
               />
               <Tooltip content={<RateTooltip />} />
               <ReferenceLine y={0} stroke="var(--muted)" strokeDasharray="3 2" />
-              <Area
-                type="monotone" dataKey="diff" name="Diff SWESTR - Styrränta"
-                stroke="#D4880A" fill="url(#gDiff)" strokeWidth={1.5}
+              <Line
+                type="monotone" dataKey="diff" name="Diff SWESTR – Styrränta"
+                stroke="#D4880A" strokeWidth={1.5} dot={false}
               />
-            </AreaChart>
+            </LineChart>
           </ResponsiveContainer>
           <div className="chart-note">
             Positiva värden innebär att SWESTR noterar över styrräntan. <br />
@@ -238,33 +221,33 @@ export default function SwestrSection() {
       <div className="info-box">
         <div className="info-box-title">Om SWESTR</div>
         <p>
-          Swestr (Swedish krona Short Term Rate) är en transaktionsbaserad referensränta 
+          Swestr (Swedish krona Short Term Rate) är en transaktionsbaserad referensränta
           som Riksbanken beräknar utifrån transaktioner som leder till inlåning utan säkerhet i svenska kronor
-           som genomförs på penningmarknaden från en bankdag till nästa. 
+           som genomförs på penningmarknaden från en bankdag till nästa.
         </p>
         <p>
-          Referensräntor används som ett gemensamt riktmärke, eller ett basvärde, 
-          vid prissättning av finansiella kontrakt som räntederivat, valutaderivat 
-          och räntebärande värdepapper. Referensräntor används även vid prissättning 
-          av lån med rörlig ränta, i Sverige främst vid lån till företag. 
-          Traditionellt har så kallade interbankräntor använts som referensvärden för dessa ändamål. 
-          Dessa räntor reflekterar enligt olika beräkningsmetoder de räntor som banker kräver av 
+          Referensräntor används som ett gemensamt riktmärke, eller ett basvärde,
+          vid prissättning av finansiella kontrakt som räntederivat, valutaderivat
+          och räntebärande värdepapper. Referensräntor används även vid prissättning
+          av lån med rörlig ränta, i Sverige främst vid lån till företag.
+          Traditionellt har så kallade interbankräntor använts som referensvärden för dessa ändamål.
+          Dessa räntor reflekterar enligt olika beräkningsmetoder de räntor som banker kräver av
           varandra för kortfristiga lån utan säkerheter, det vill säga kostnaden för att låna pengar
-           av en annan bank.Interbankräntorna har vanligen beräknats delvis baserade på bankers bud 
-           eller bedömningar av en rimlig ränta för icke-säkerställd utlåning på den aktuella löptiden 
-           givet rådande marknadsläge. Dessa räntor bygger alltså inte endast direkt på faktiska 
+           av en annan bank.Interbankräntorna har vanligen beräknats delvis baserade på bankers bud
+           eller bedömningar av en rimlig ränta för icke-säkerställd utlåning på den aktuella löptiden
+           givet rådande marknadsläge. Dessa räntor bygger alltså inte endast direkt på faktiska
            transaktioner.
         </p>
         <p>
-          Under den globala finanskrisen 2008-2009 försämrades likviditeten i interbank­låne­marknaden 
-          avsevärt. Detta bidrog till en osäkerhet om huruvida de traditionella referensräntorna 
-          verkligen speglade rådande marknadsförhållanden. Efter att Liborskandalen uppdagades att flera internationella banker, 
+          Under den globala finanskrisen 2008-2009 försämrades likviditeten i interbank­låne­marknaden
+          avsevärt. Detta bidrog till en osäkerhet om huruvida de traditionella referensräntorna
+          verkligen speglade rådande marknadsförhållanden. Efter att Liborskandalen uppdagades att flera internationella banker,
           i syfte att gynna den egna banken eller enskilda anställda, hade manipulerat referensräntan Libor.
-          Dessa faktorer ledde till ett minskat globalt förtroende för de existerande referensräntorna. 
+          Dessa faktorer ledde till ett minskat globalt förtroende för de existerande referensräntorna.
           Ett stort reformarbete påbörjades därför med syftet att stärka förtroendet och tillförlitligheten för referensräntor.
         </p>
         <p>
-          Swestr började användas som referensränta i finansiella kontrakt från och med värdedag 1 september 2021, 
+          Swestr började användas som referensränta i finansiella kontrakt från och med värdedag 1 september 2021,
           det vill säga den notering som publicerades den 2 september 2021.
         </p>
         <p>Läs mer om <a href="https://www.riksbank.se/sv/statistik/swestr/" target="_blank" rel="noreferrer">Swestr</a> här.</p>
