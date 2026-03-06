@@ -26,7 +26,6 @@ from .assets.assets import (
     deposit_rates,
     nfc_lending_rates,
 )
-from .assets.frontend import build_frontend
 from .assets.sync import GitHubRepoResource, sync_data_to_github
 
 
@@ -100,42 +99,29 @@ def _nth_banking_day(year: int, month: int, n: int) -> date:
 # Jobs
 # ---------------------------------------------------------------------------
 
-riksbank_certificate_job = define_asset_job(
-    name="riksbank_certificate_job",
-    selection=AssetSelection.assets(riksbank_certificate),
-)
+# Each job fetches data AND syncs to GitHub so Pages rebuilds immediately.
 
-sales_of_gov_bonds_job = define_asset_job(
-    name="sales_of_gov_bonds_job",
-    selection=AssetSelection.assets(sales_of_gov_bonds),
-)
-
-swestr_job = define_asset_job(
-    name="swestr_job",
-    selection=AssetSelection.assets(get_swestr_values),
-)
-
-policy_rate_job = define_asset_job(
-    name="policy_rate_job",
-    selection=AssetSelection.assets(get_policy_rate_values),
-)
-
-build_frontend_job = define_asset_job(
-    name="build_frontend_job",
-    selection=AssetSelection.assets(build_frontend),
-)
-
-scb_data_job = define_asset_job(
-    name="scb_data_job",
-    selection=AssetSelection.assets(mortgage_rates, deposit_rates, nfc_lending_rates),
-)
-
-# Sync jobs – fetch data and push Parquet to GitHub in one execution.
-# Assets not in the selection are treated as previously materialised.
 daily_sync_job = define_asset_job(
     name="daily_sync_job",
     selection=AssetSelection.assets(
         get_swestr_values, get_policy_rate_values, sync_data_to_github,
+    ),
+)
+
+riksbank_certificate_job = define_asset_job(
+    name="riksbank_certificate_job",
+    selection=AssetSelection.assets(riksbank_certificate, sync_data_to_github),
+)
+
+sales_of_gov_bonds_job = define_asset_job(
+    name="sales_of_gov_bonds_job",
+    selection=AssetSelection.assets(sales_of_gov_bonds, sync_data_to_github),
+)
+
+scb_data_job = define_asset_job(
+    name="scb_data_job",
+    selection=AssetSelection.assets(
+        mortgage_rates, deposit_rates, nfc_lending_rates, sync_data_to_github,
     ),
 )
 
@@ -168,24 +154,6 @@ sales_of_gov_bonds_schedule = ScheduleDefinition(
     name="sales_of_gov_bonds_weekly",
     target=sales_of_gov_bonds_job,
     cron_schedule="40 10 * * 5",  # Every Friday at 10:40
-)
-
-swestr_schedule = ScheduleDefinition(
-    name="swestr_weekday",
-    target=swestr_job,
-    cron_schedule="5 9 * * 1-5",  # Every weekday at 09:05
-)
-
-policy_rate_schedule = ScheduleDefinition(
-    name="swea_weekday",
-    target=policy_rate_job,
-    cron_schedule="5 9 * * 1-5",  # Every weekday at 09:05
-)
-
-build_frontend_schedule = ScheduleDefinition(
-    name="build_frontend_weekly",
-    target=build_frontend_job,
-    cron_schedule="0 11 * * 5",  # Every Friday at 11:00 (after data jobs finish)
 )
 
 
@@ -231,7 +199,6 @@ defs = Definitions(
         sales_of_gov_bonds,
         get_swestr_values,
         get_policy_rate_values,
-        build_frontend,
         mortgage_rates,
         deposit_rates,
         nfc_lending_rates,
@@ -240,9 +207,6 @@ defs = Definitions(
     jobs=[
         riksbank_certificate_job,
         sales_of_gov_bonds_job,
-        swestr_job,
-        policy_rate_job,
-        build_frontend_job,
         scb_data_job,
         daily_sync_job,
         full_sync_job,
@@ -250,9 +214,6 @@ defs = Definitions(
     schedules=[
         riksbank_certificate_schedule,
         sales_of_gov_bonds_schedule,
-        swestr_schedule,
-        policy_rate_schedule,
-        build_frontend_schedule,
         scb_data_schedule,
         daily_sync_schedule,
         full_sync_schedule,
