@@ -61,6 +61,16 @@ def build_cert():
         )
     )
 
+    # Read finjusterade transaktioner and prepare for joining
+    df_finj = (
+        pl.read_excel(DATA_DIR / "Finjusterade_transaktioner.xlsx")
+        .rename({"Datum": "Anbudsdag", "Finjusterade transaktioner": "finjusterade"})
+        .sort("Anbudsdag")
+    )
+
+    # Join finjusterade onto cert data by date, using asof join to get nearest prior value
+    df = df.join_asof(df_finj, on="Anbudsdag", strategy="nearest")
+
     row = df.row(-1, named=True)
     latest = {
         "erbjuden_volym": row["Erbjuden_volym"],
@@ -95,6 +105,7 @@ def build_cert():
                 "tilldelad_volym": r["Tilldelad_volym"],
                 "aterstaende": r["Aterstaende"],
                 "rantefri_inlaning": ri,
+                "finjusterade": r["finjusterade"],
             }
         )
 

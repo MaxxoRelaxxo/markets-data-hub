@@ -33,6 +33,7 @@ def _(Path):
     rb_cert = str(_data_dir / "rb_cert_auctions_result.parquet")
     rb_gov = str(_data_dir / "sales_of_government_bonds.parquet")
     ref_rgk = str(_data_dir / "ref_rgk.xlsx")
+    finj_trans = str(_data_dir / "Finjusterade_transaktioner.xlsx")
     swestr = str(_data_dir / "swestr_values.parquet")
     policy_rate = str(_data_dir / "policy_rate_values.parquet")
     mortgage_rates = str(_data_dir / "mortgage_rates.parquet")
@@ -40,6 +41,7 @@ def _(Path):
     nfc_lending_rates = str(_data_dir / "nfc_lending_rates.parquet")
     return (
         deposit_rates,
+        finj_trans,
         mortgage_rates,
         nfc_lending_rates,
         policy_rate,
@@ -142,13 +144,13 @@ def _(pl, rb_cert):
         pl.read_parquet(rb_cert)
         .sort("Anbudsdag")
         .with_columns(
-            (pl.col.Erbjuden_volym - pl.col.Tilldelad_volym).round(1).alias("Återstående_likviditetsöverskott"),
+            (pl.col.Erbjuden_volym - pl.col.Tilldelad_volym).round(1).alias("Reserver"),
             (pl.col("Erbjuden_volym") - pl.col("Erbjuden_volym").shift(1)).round(1).alias("Delta_Erbjuden_volym"),
             (pl.col("Tilldelad_volym") - pl.col("Tilldelad_volym").shift(1)).round(1).alias("Delta_Tilldelad_volym"),
             (pl.col("Antal_bud") - pl.col("Antal_bud").shift(1)).round(1).alias("Delta_Antal_bud"),
         )
         .with_columns(
-            (pl.col("Återstående_likviditetsöverskott") - pl.col("Återstående_likviditetsöverskott").shift(1)).alias("Delta_Återstående_likviditetsöverskott")
+            (pl.col("Reserver") - pl.col("Reserver").shift(1)).alias("Delta_Reserver")
         )
     )
     return (df_cert,)
@@ -166,7 +168,7 @@ def _(df_cert, mo):
         for col, label, delta in [
             ("Erbjuden_volym", "Erbjuden volym", "Delta_Erbjuden_volym"),
             ("Tilldelad_volym", "Tilldelad volym", "Delta_Tilldelad_volym"),
-            ("Återstående_likviditetsöverskott", "Återstående likviditetsöverskott", "Delta_Återstående_likviditetsöverskott"),
+            ("Reserver", "Reserver", "Delta_Reserver"),
         ]
     ] + [
         card(mo.stat(value=str(row['Antal_bud']), label="Antal bud", caption=f"Δ {row['Delta_Antal_bud']:+.0f}", bordered=True)),
@@ -175,11 +177,12 @@ def _(df_cert, mo):
 
 
 @app.cell
-def _(alt, date, df_cert, mo, pl):
+def _(alt, date, df_cert, finj_trans, mo, pl):
     order_map = {
         "Erbjuden_volym": (1, "Erbjuden volym"),
-        "Återstående_likviditetsöverskott": (2, "Återstående likviditetsöverskott"),
-        "Räntefri inlåning": (3, "Räntefri inlåning"),
+        "Reserver": (2, "Reserver"),
+        "Finjusterade transaktioner": (3, "Finjusterade transaktioner"),
+        "Räntefri inlåning": (4, "Räntefri inlåning"),
     }
 
     deposit_req = pl.DataFrame({
@@ -188,11 +191,20 @@ def _(alt, date, df_cert, mo, pl):
         "value": [40.055, 40.055, 40.055, 40.055]
     })
 
+    # Read finjusterade transaktioner and join onto cert data
+    df_finj = (
+        pl.read_excel(finj_trans)
+        .rename({"Datum": "Anbudsdag", "Finjusterade transaktioner": "finjusterade"})
+        .sort("Anbudsdag")
+    )
+    df_cert_with_finj = df_cert.join_asof(df_finj, on="Anbudsdag", strategy="nearest")
+
     rb_cert_plot_df = (
-        df_cert
+        df_cert_with_finj
+        .with_columns(pl.col("finjusterade").alias("Finjusterade transaktioner"))
         .unpivot(
             index="Anbudsdag",
-            on=["Erbjuden_volym", "Återstående_likviditetsöverskott"]
+            on=["Erbjuden_volym", "Reserver", "Finjusterade transaktioner"]
         )
     )
 
@@ -200,7 +212,7 @@ def _(alt, date, df_cert, mo, pl):
 
     # Komplett datumgrid
     all_dates = rb_cert_plot_df.select("Anbudsdag").unique()
-    all_variables = pl.DataFrame({"variable": ["Erbjuden_volym", "Återstående_likviditetsöverskott", "Räntefri inlåning"]})
+    all_variables = pl.DataFrame({"variable": ["Erbjuden_volym", "Reserver", "Finjusterade transaktioner", "Räntefri inlåning"]})
     full_grid = all_dates.join(all_variables, how="cross")
 
     rb_cert_plot_df = (
@@ -218,7 +230,7 @@ def _(alt, date, df_cert, mo, pl):
         )
     )
 
-    domain = ["Erbjuden volym", "Återstående likviditetsöverskott", "Räntefri inlåning"]
+    domain = ["Erbjuden volym", "Reserver", "Finjusterade transaktioner", "Räntefri inlåning"]
 
     cert_plot = (
         alt.Chart(rb_cert_plot_df)
@@ -237,7 +249,7 @@ def _(alt, date, df_cert, mo, pl):
                 "variable:N",
                 scale=alt.Scale(
                     domain=domain,
-                    range=["#0071B9", "#B91E2B", "#f4a700"]
+                    range=["#0071B9", "#B91E2B", "#2D7D4F", "#f4a700"]
                 ),
                 legend=alt.Legend(orient="bottom", title=None)
             ),
@@ -245,14 +257,14 @@ def _(alt, date, df_cert, mo, pl):
         )
         .properties(
             title=alt.Title(
-                text="Likviditetsöverskott över tid",
+                text="Banksystemets likviditetsställning - fördelning mellan penningpolitiska instrument",
                 fontSize=16,
             ),
             width="container",
             height=400,
         )
         .configure_legend(
-            columns=3,
+            columns=4,
             symbolType="square",
             symbolSize=100,
         )
@@ -262,7 +274,7 @@ def _(alt, date, df_cert, mo, pl):
         cert_plot,
         mo.Html("""
             <div style="font-size:11px; color:gray; text-align:left; padding: 4px 0 0 60px;">
-                Anmärkning: Grafen omfattar ej återförsäljning av riksbankscertifikat eller finjusterade transaktioner. Likviditetsställningen mot banksystemet kan därför avvika från vad som framgår av grafen.<br>
+                Anmärkning: Grafen omfattar ej återförsäljning av riksbankscertifikat. Likviditetsställningen mot banksystemet kan därför avvika från vad som framgår av grafen.<br>
                 Källa: Riksbanken.
             </div>
         """)
