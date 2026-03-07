@@ -25,6 +25,18 @@ def _dump(obj, name):
     print(f"  wrote {path}  ({path.stat().st_size / 1024:.1f} KB)")
 
 
+def _dump_csv(df: pl.DataFrame, name: str, col_rename: dict[str, str]) -> None:
+    """Write a CSV export with Swedish column names (BOM for Excel compatibility)."""
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    path = OUT_DIR / name
+    out = df.rename({k: v for k, v in col_rename.items() if k in df.columns})
+    # Keep only renamed columns in specified order
+    out = out.select([v for v in col_rename.values() if v in out.columns])
+    csv_text = out.write_csv(separator=";")
+    path.write_bytes(b"\xef\xbb\xbf" + csv_text.encode("utf-8"))
+    print(f"  wrote {path}  ({path.stat().st_size / 1024:.1f} KB)")
+
+
 def build_cert():
     df = (
         pl.read_parquet(DATA_DIR / "rb_cert_auctions_result.parquet")
@@ -88,6 +100,27 @@ def build_cert():
 
     _dump({"latest": latest, "timeseries": timeseries}, "cert_data.json")
 
+    # Full raw export for CSV download – all scraped columns, clear Swedish labels
+    cert_col_rename = {
+        "Anbudsdag": "Anbudsdag",
+        "Likviddag": "Likviddag",
+        "Forfallodag": "Förfallodag",
+        "Rantesats": "Räntesats (%)",
+        "Erbjuden_volym": "Erbjuden volym (mdkr)",
+        "Totalt_budbelopp": "Totalt budbelopp (mdkr)",
+        "Tilldelad_volym": "Tilldelad volym (mdkr)",
+        "Antal_bud": "Antal bud",
+        "Tilldelningsprocent": "Tilldelningsprocent (%)",
+        "Isin": "ISIN",
+    }
+    cert_raw = (
+        pl.read_parquet(DATA_DIR / "rb_cert_auctions_result.parquet")
+        .filter(pl.col("Anbudsdag").dt.year() <= date.today().year)
+        .sort("Anbudsdag")
+        .drop("Source_url", strict=False)
+    )
+    _dump_csv(cert_raw, "riksbankscertifikat.csv", cert_col_rename)
+
 
 def build_bonds():
     ref_cols = [
@@ -142,6 +175,33 @@ def build_bonds():
         },
         "bonds_data.json",
     )
+
+    # Full raw export for CSV download – all scraped columns, clear Swedish labels
+    bonds_col_rename = {
+        "Anbudsdag": "Anbudsdag",
+        "Instrument/Marknad": "Instrument",
+        "Lan": "Lån",
+        "Isin": "ISIN",
+        "Kupong": "Kupong (%)",
+        "Forfallodag": "Förfallodag",
+        "Erbjuden_volym": "Erbjuden volym (Mkr)",
+        "Budvolym": "Budvolym (Mkr)",
+        "Tilldelad_volym": "Tilldelad volym (Mkr)",
+        "Antal_bud": "Antal bud",
+        "Antal_godkända_bud": "Antal godkända bud",
+        "Genomsnittlig_ranta": "Genomsnittlig ränta (%)",
+        "Lagsta_ranta": "Lägsta ränta (%)",
+        "Hogst_accepterade_ranta": "Högst accepterade ränta (%)",
+        "Tilldelning_hosta_ranta": "Tilldelning till högsta ränta (%)",
+    }
+    bonds_raw = (
+        pl.read_parquet(DATA_DIR / "sales_of_government_bonds.parquet")
+        .join(ref, left_on="Isin", right_on="ISIN")
+        .sort("Anbudsdag", "Isin")
+        .drop("Source_url", strict=False)
+    )
+    for instrument, filename in [("SGB", "statsobligationer_sgb.csv"), ("SGB IL", "statsobligationer_sgb_il.csv")]:
+        _dump_csv(bonds_raw.filter(pl.col("Instrument/Marknad") == instrument), filename, bonds_col_rename)
 
 
 def build_swestr():

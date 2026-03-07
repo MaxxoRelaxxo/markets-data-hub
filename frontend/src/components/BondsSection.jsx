@@ -7,6 +7,7 @@ import StatCard from "./StatCard";
 
 const PALETTE = ["#0071B9", "#B91E2B", "#D4880A", "#2D7D4F", "#7C3AED", "#0891B2", "#C026D3", "#059669"];
 
+
 function BondTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
@@ -88,15 +89,24 @@ export default function BondsSection() {
               Bid-to-cover {"\u2013"} {bondType === "sgb" ? "Nominella" : "Reala"} Statsobligationer
             </div>
           </div>
-          <div className="toggle-group">
-            <button
-              className={`toggle-btn ${bondType === "sgb" ? "active" : ""}`}
-              onClick={() => setBondType("sgb")}
-            >SGB</button>
-            <button
-              className={`toggle-btn ${bondType === "sgb_il" ? "active" : ""}`}
-              onClick={() => setBondType("sgb_il")}
-            >SGB IL</button>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <div className="toggle-group">
+              <button
+                className={`toggle-btn ${bondType === "sgb" ? "active" : ""}`}
+                onClick={() => setBondType("sgb")}
+              >SGB</button>
+              <button
+                className={`toggle-btn ${bondType === "sgb_il" ? "active" : ""}`}
+                onClick={() => setBondType("sgb_il")}
+              >SGB IL</button>
+            </div>
+            <a
+              className="export-btn"
+              href={`./data/statsobligationer_${bondType}.csv`}
+              download={`statsobligationer_${bondType}.csv`}
+            >
+              Exportera CSV
+            </a>
           </div>
         </div>
 

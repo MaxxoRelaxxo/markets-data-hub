@@ -58,7 +58,12 @@ export default function CertificateSection() {
       </div>
 
       <div className="chart-card">
-        <div className="chart-card-title">Likviditetsöverskott över tid</div>
+        <div className="chart-card-head">
+          <div className="chart-card-title">Likviditetsöverskott över tid</div>
+          <a className="export-btn" href="./data/riksbankscertifikat.csv" download="riksbankscertifikat.csv">
+            Exportera CSV
+          </a>
+        </div>
         <ResponsiveContainer width="100%" height={320}>
           <BarChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
