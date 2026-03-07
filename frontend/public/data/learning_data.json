@@ -3,31 +3,25 @@
     {
       "id": "swestr-intro",
       "title": "SWESTR – Den nya referensräntan",
-      "ingress": "SWESTR (Swedish krona Short Term Rate) ersatte STIBOR som den primära referensräntan för transaktioner i svenska kronor. Här förklaras bakgrunden och hur räntan beräknas.",
+      "ingress": "[Ingress – fylls i]",
       "body": [
-        "SWESTR är en transaktionsbaserad referensränta som Riksbanken publicerar varje bankdag. Räntan baseras på faktiska övernattransaktioner i svenska kronor och speglar därigenom verkliga marknadsförhållanden.",
-        "Beräkningsmetoden innebär att de 12,5 procent lägsta och 12,5 procent högsta räntorna trimmas bort (trimmade medelvärden), vilket gör räntan robust mot enstaka extremvärden. SWESTR publicerades för första gången den 2 september 2021.",
-        "Övergången från IBOR-räntor till transaktionsbaserade räntor är en global trend som drevs på av Liborskandalen 2012, då det uppdagades att banker manipulerat referensräntorna."
+        "[Brödtext – fylls i]"
       ]
     },
     {
       "id": "riksbankscert",
       "title": "Riksbankscertifikat och likviditetshantering",
-      "ingress": "Riksbanken använder certifikat för att hantera likviditetsöverskott i banksystemet. Auktionerna sker varje tisdag och certifikaten har normalt en löptid på sju dagar.",
+      "ingress": "[Ingress – fylls i]",
       "body": [
-        "När banksystemet som helhet har ett överskott av likviditet – det vill säga mer inlåning hos Riksbanken än vad de är skyldiga – emitterar Riksbanken certifikat för att dra in detta överskott.",
-        "Räntan på certifikaten sätts till styrräntan, vilket säkerställer att överskottslikviditet inte pressar ner dagslåneräntan under styrräntan. Detta är en central del av Riksbankens operativa penningpolitiska ramverk.",
-        "Tilldelad volym beror på hur stort likviditetsöverskottet är och hur mycket av det Riksbanken väljer att dränera. Räntefri inlåning från staten kan påverka systemets totala likviditet."
+        "[Brödtext – fylls i]"
       ]
     },
     {
       "id": "statsobligationer",
       "title": "Riksbankens försäljning av statsobligationer",
-      "ingress": "Sedan april 2023 säljer Riksbanken statsobligationer som ett led i att normalisera sin balansräkning efter de stora tillgångsköpen under 2020–2022.",
+      "ingress": "[Ingress – fylls i]",
       "body": [
-        "Riksbanken köpte statsobligationer i stor skala under covid-pandemin och de efterföljande åren för att stötta ekonomin och hålla långa räntor nere. När inflationen steg beslutade Riksbanken att börja avveckla dessa innehav.",
-        "Försäljningarna sker via auktioner varannan vecka, normalt på fredagar, och obligationerna tilldelas de budgivare som lämnar bäst bud (högst pris/lägst ränta). Bid-to-cover-kvoten visar efterfrågan – ett värde över 2,0 indikerar god efterfrågan.",
-        "Auktionerna inkluderar både nominella statsobligationer (SGB) och inflationsskyddade obligationer (SGB IL). Den löpande försäljningen bidrar till att minska Riksbankens exponering mot ränte- och kreditrisk."
+        "[Brödtext – fylls i]"
       ]
     }
   ],
