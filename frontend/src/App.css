@@ -471,3 +471,23 @@ body {
 }
 
 .info-box p:last-child { margin-bottom: 0; }
+
+/* ── Export button ─────────────────────────────────────────────── */
+.export-btn {
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.export-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}

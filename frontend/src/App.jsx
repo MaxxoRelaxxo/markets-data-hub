@@ -3,6 +3,7 @@ import CertificateSection from "./components/CertificateSection";
 import BondsSection from "./components/BondsSection";
 import SwestrSection from "./components/SwestrSection";
 import ScbRatesSection from "./components/ScbRatesSection";
+import LearningSection from "./components/LearningSection";
 import ErrorBoundary from "./components/ErrorBoundary";
 
 function getWeekNumber(d) {
@@ -22,6 +23,7 @@ const TABS = [
   { id: "gov", label: "Försäljning av Statsobligationer" },
   { id: "swestr", label: "Swestr" },
   { id: "scb", label: "In-och utlåningsräntor" },
+  { id: "learning", label: "Fördjupning" },
 ];
 
 export default function App() {
@@ -104,6 +106,7 @@ export default function App() {
           {activeTab === "gov" && <BondsSection />}
           {activeTab === "swestr" && <SwestrSection />}
           {activeTab === "scb" && <ScbRatesSection />}
+          {activeTab === "learning" && <LearningSection />}
         </ErrorBoundary>
 
         <div className="footer">

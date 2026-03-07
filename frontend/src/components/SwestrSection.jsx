@@ -173,11 +173,11 @@ export default function SwestrSection() {
               <Tooltip content={<RateTooltip />} />
               <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
               <Line
-                type="monotone" dataKey="pctl87_5" name="Övre percentil (87,5%)"
+                type="monotone" dataKey="pctl87_5" name="Ränta vid övre trimningsgräns"
                 stroke="#0071B9" strokeWidth={1} strokeDasharray="4 2" dot={false} strokeOpacity={0.5}
               />
               <Line
-                type="monotone" dataKey="pctl12_5" name="Nedre percentil (12,5%)"
+                type="monotone" dataKey="pctl12_5" name="Ränta vid nedre trimningsgräns"
                 stroke="#0071B9" strokeWidth={1} strokeDasharray="4 2" dot={false} strokeOpacity={0.5}
               />
               <Line

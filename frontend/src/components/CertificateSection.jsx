@@ -7,6 +7,25 @@ import StatCard from "./StatCard";
 
 const fmt = (v) => v != null ? v.toFixed(1).replace(".", ",") : "\u2013";
 
+function exportCertCsv(timeseries) {
+  const headers = ["Datum", "Erbjuden volym (mdkr)", "Tilldelad volym (mdkr)", "Återstående likviditetsöverskott (mdkr)", "Räntefri inlåning (mdkr)"];
+  const rows = timeseries.map((d) => [
+    d.date,
+    d.erbjuden_volym ?? "",
+    d.tilldelad_volym ?? "",
+    d.aterstaende ?? "",
+    d.rantefri_inlaning ?? "",
+  ]);
+  const csv = [headers, ...rows].map((r) => r.join(";")).join("\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "riksbankscertifikat.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
@@ -58,7 +77,12 @@ export default function CertificateSection() {
       </div>
 
       <div className="chart-card">
-        <div className="chart-card-title">Likviditetsöverskott över tid</div>
+        <div className="chart-card-head">
+          <div className="chart-card-title">Likviditetsöverskott över tid</div>
+          <button className="export-btn" onClick={() => exportCertCsv(timeseries)}>
+            Exportera CSV
+          </button>
+        </div>
         <ResponsiveContainer width="100%" height={320}>
           <BarChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />

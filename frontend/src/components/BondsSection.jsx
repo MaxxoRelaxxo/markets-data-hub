@@ -7,6 +7,26 @@ import StatCard from "./StatCard";
 
 const PALETTE = ["#0071B9", "#B91E2B", "#D4880A", "#2D7D4F", "#7C3AED", "#0891B2", "#C026D3", "#059669"];
 
+function exportBondsCsv(data, bondType) {
+  const headers = ["Datum", "Lån", "Bid-to-cover", "Budvolym (Mkr)", "Tilldelad (Mkr)", "Löptid (år)"];
+  const rows = data.map((d) => [
+    d.date,
+    d.lan,
+    d.bid_to_cover ?? "",
+    d.budvolym ?? "",
+    d.tilldelad ?? "",
+    d.lopetid != null ? d.lopetid.toFixed(2) : "",
+  ]);
+  const csv = [headers, ...rows].map((r) => r.join(";")).join("\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `statsobligationer_${bondType}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function BondTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
@@ -88,15 +108,20 @@ export default function BondsSection() {
               Bid-to-cover {"\u2013"} {bondType === "sgb" ? "Nominella" : "Reala"} Statsobligationer
             </div>
           </div>
-          <div className="toggle-group">
-            <button
-              className={`toggle-btn ${bondType === "sgb" ? "active" : ""}`}
-              onClick={() => setBondType("sgb")}
-            >SGB</button>
-            <button
-              className={`toggle-btn ${bondType === "sgb_il" ? "active" : ""}`}
-              onClick={() => setBondType("sgb_il")}
-            >SGB IL</button>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <div className="toggle-group">
+              <button
+                className={`toggle-btn ${bondType === "sgb" ? "active" : ""}`}
+                onClick={() => setBondType("sgb")}
+              >SGB</button>
+              <button
+                className={`toggle-btn ${bondType === "sgb_il" ? "active" : ""}`}
+                onClick={() => setBondType("sgb_il")}
+              >SGB IL</button>
+            </div>
+            <button className="export-btn" onClick={() => exportBondsCsv(sorted, bondType)}>
+              Exportera CSV
+            </button>
           </div>
         </div>
 
