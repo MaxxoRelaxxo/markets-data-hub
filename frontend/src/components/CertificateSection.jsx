@@ -35,11 +35,12 @@ export default function CertificateSection() {
   if (!data) return null;
   const { latest: l, timeseries } = data;
 
-  const chartData = timeseries.slice(-120).map((d) => ({
+  const chartData = timeseries.map((d) => ({
     date: d.date,
     "Tilldelad volym": d.tilldelad_volym,
-    "Likviditetsöverskott": d.aterstaende,
+    "Reserver": d.aterstaende,
     "Räntefri inlåning": d.rantefri_inlaning,
+    "Finjusterade transaktioner": d.finjusterade,
   }));
 
   return (
@@ -53,13 +54,13 @@ export default function CertificateSection() {
       <div className="stat-row">
         <StatCard label="Erbjuden volym" value={fmt(l.erbjuden_volym)} unit="mdkr" delta={l.delta_erbjuden} />
         <StatCard label="Tilldelad volym" value={fmt(l.tilldelad_volym)} unit="mdkr" delta={l.delta_tilldelad} />
-        <StatCard label="Återstående likviditetsöverskott" value={fmt(l.aterstaende)} unit="mdkr" delta={l.delta_aterstaende} />
+        <StatCard label="Reserver" value={fmt(l.aterstaende)} unit="mdkr" delta={l.delta_aterstaende} />
         <StatCard label="Antal bud" value={String(l.antal_bud)} delta={l.delta_antal_bud} />
       </div>
 
       <div className="chart-card">
         <div className="chart-card-head">
-          <div className="chart-card-title">Likviditetsöverskott över tid</div>
+          <div className="chart-card-title">Banksystemets likviditetsställning - fördelning mellan penningpolitiska instrument</div>
           <a className="export-btn" href="./data/riksbankscertifikat.csv" download="riksbankscertifikat.csv">
             Exportera CSV
           </a>
@@ -68,7 +69,7 @@ export default function CertificateSection() {
           <BarChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
             <XAxis
-              dataKey="date" interval={11}
+              dataKey="date" interval={Math.floor(chartData.length / 8)}
               tick={{ fontSize: 11, fill: "var(--muted)" }} tickLine={false} axisLine={false}
             />
             <YAxis
@@ -78,12 +79,13 @@ export default function CertificateSection() {
             <Tooltip content={<ChartTooltip />} />
             <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
             <Bar dataKey="Tilldelad volym" stackId="stack" fill="#0071B9" fillOpacity={0.85} />
-            <Bar dataKey="Likviditetsöverskott" stackId="stack" fill="#B91E2B" fillOpacity={0.85} />
+            <Bar dataKey="Reserver" stackId="stack" fill="#B91E2B" fillOpacity={0.85} />
+            <Bar dataKey="Finjusterade transaktioner" stackId="stack" fill="#2D7D4F" fillOpacity={0.85} />
             <Bar dataKey="Räntefri inlåning" stackId="stack" fill="#D4880A" fillOpacity={0.85} radius={[3, 3, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
         <div className="chart-note">
-          Grafen omfattar ej återköp av riksbankscertifikat eller finjusterade transaktioner. <br />
+          Grafen omfattar ej återköp av riksbankscertifikat. <br />
           Källa: Riksbanken.
         </div>
 
