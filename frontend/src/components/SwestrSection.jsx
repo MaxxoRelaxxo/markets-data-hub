@@ -221,25 +221,6 @@ export default function SwestrSection() {
           </div>
         </div>
       )}
-      <div className="info-box">
-        <div className="info-box-title">SWESTR – Den nya referensräntan</div>
-        <p>
-          Referensräntor utgör en central infrastrukturkomponent i det finansiella systemet genom att fungera som riktmärke vid prissättning av finansiella kontrakt, däribland lån med rörlig ränta, derivat och obligationer med rörlig kupong. Under närmare fyra decennier har så kallade interbankräntor (IBOR) fyllt denna funktion. I svenska kronor har Stibor (Stockholm Interbank Offered Rate) varit den dominerande referensräntan.
-        </p>
-        <p>
-          Interbankräntornas relevans har emellertid avtagit i takt med att bankernas finansieringsstruktur förändrats. Interbanklån utgör inte längre den primära finansieringskällan, vilket medfört att de transaktioner som interbankräntorna avser att spegla blivit allt färre. Konsekvensen är att ränteberäkningen i ökande grad vilar på panelbankernas egna bedömningar snarare än observerbara marknadspriser. Denna problematik underströks ytterligare av den så kallade Liborskandalen 2012, som avslöjade systematisk manipulation av interbankräntor.
-        </p>
-        <p>
-          Mot bakgrund av dessa strukturella brister har ett internationellt reformarbete initierats med två parallella mål, att i möjligaste mån basera befintliga interbankräntor på faktiska transaktioner, samt att utveckla nya, fullt transaktionsbaserade referensräntor. Denna utveckling har resulterat i att ett flertal centralbanker börjat publicera sådana räntor. Dessa är €STR inom euroområdet, SOFR i USA och SONIA i Storbritannien. Libor, den globalt mest använda interbankräntan, har avvecklats.
-        </p>
-        <p>
-          Som en del av detta internationella skifte åtog sig Riksbanken att beräkna och publicera Swestr (Swedish krona Short Term Rate), en referensränta baserad uteslutande på faktiska overnighttransaktioner i svenska kronor. Testperioden inleddes i januari 2021 och officiell publicering påbörjades sensommaren samma år. Valet att begränsa Swestr till overnightlöptid motiveras av att det enbart på denna löptid existerar ett tillräckligt stort och stabilt transaktionsunderlag för att säkerställa representativitet och begränsa enskilda aktörers inflytande över räntenivån.
-        </p>
-        <p>
-          För att möjliggöra användning av Swestr i kontrakt med längre löptid beräknas bakåtblickande genomsnittsräntor som kumulativa genomsnitt av historiska Swestr-noteringar. Den faktiska räntan är i dessa fall först känd vid ränteperiodens slut, till skillnad från framåtblickande interbankräntor. Framåtblickande terminsräntor baserade på derivathandel med Swestr som underliggande referens förutsätter en tillräckligt likvid derivatmarknad. EU:s benchmarkförordning ställer vidare krav på fallbacklösningar i kontrakt som refererar till Stibor, och dessa fallbacklösningar bygger internationellt sett på genomsnittsräntor för den transaktionsbaserade referensräntan.
-        </p>
-        <p>Läs mer om <a href="https://www.riksbank.se/sv/statistik/swestr/" target="_blank" rel="noreferrer">Swestr</a> här.</p>
-      </div>
     </div>
   );
 }
