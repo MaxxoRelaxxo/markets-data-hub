@@ -105,14 +105,14 @@ export default function BondsSection() {
               href={`./data/statsobligationer_${bondType}_graf.csv`}
               download={`statsobligationer_${bondType}_graf.csv`}
             >
-              Exportera bid-to-cover CSV
+              Exportera data från graf till CSV
             </a>
             <a
               className="export-btn"
               href={`./data/statsobligationer_${bondType}.csv`}
               download={`statsobligationer_${bondType}.csv`}
             >
-              Exportera auktionsdata CSV
+              Exportera rådata till CSV
             </a>
           </div>
         </div>
