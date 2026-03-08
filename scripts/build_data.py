@@ -92,6 +92,9 @@ def build_cert():
     }
     first_deposit = min(deposit_dates)
 
+    # Finjusterade transaktioner were discontinued on 2019-10-09
+    finj_cutoff = date(2019, 10, 7)
+
     timeseries = []
     for r in df.iter_rows(named=True):
         d = r["Anbudsdag"]
@@ -105,7 +108,7 @@ def build_cert():
                 "tilldelad_volym": r["Tilldelad_volym"],
                 "aterstaende": r["Aterstaende"],
                 "rantefri_inlaning": ri,
-                "finjusterade": r["finjusterade"],
+                "finjusterade": r["finjusterade"] if d <= finj_cutoff else None,
             }
         )
 
