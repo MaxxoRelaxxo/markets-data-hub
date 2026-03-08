@@ -199,6 +199,15 @@ def _(alt, date, df_cert, finj_trans, mo, pl):
     )
     df_cert_with_finj = df_cert.join_asof(df_finj, on="Anbudsdag", strategy="nearest")
 
+    # Finjusterade transaktioner were discontinued on 2019-10-09
+    finj_cutoff = date(2019, 10, 7)
+    df_cert_with_finj = df_cert_with_finj.with_columns(
+        pl.when(pl.col("Anbudsdag") <= finj_cutoff)
+        .then(pl.col("finjusterade"))
+        .otherwise(None)
+        .alias("finjusterade")
+    )
+
     rb_cert_plot_df = (
         df_cert_with_finj
         .with_columns(pl.col("finjusterade").alias("Finjusterade transaktioner"))
