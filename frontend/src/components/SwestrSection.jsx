@@ -85,13 +85,13 @@ export default function SwestrSection() {
     <div>
       <div className="section-header">
         <div className="section-accent" />
-        <h2 className="section-title">Penningmarknad {"\u2013"} SWESTR</h2>
-        <p className="section-sub">Swedish Short-Term Rate</p>
+        <h2 className="section-title">Penningmarknad {"\u2013"} Swestr</h2>
+        <p className="section-sub">Swedish krona Short-Term Rate</p>
       </div>
 
       <div className="stat-row">
         <StatCard
-          label="SWESTR"
+          label="Swestr"
           value={latest.rate != null ? latest.rate.toFixed(3).replace(".", ",") : "\u2013"}
           unit="%"
           delta={prev ? parseFloat((last.rate - prev.rate).toFixed(4)) : undefined}
@@ -107,7 +107,7 @@ export default function SwestrSection() {
 
       <div className="sub-tabs">
         {[
-          { id: "over_tid", label: "SWESTR över tid" },
+          { id: "over_tid", label: "Swestr över tid" },
           { id: "manad", label: "Senaste månaden" },
           { id: "spread", label: "Avvikelse" },
         ].map((t) => (
@@ -123,7 +123,7 @@ export default function SwestrSection() {
 
       {subTab === "over_tid" && (
         <div className="chart-card">
-          <div className="chart-card-title">Styrränta vs SWESTR</div>
+          <div className="chart-card-title">Styrränta vs Swestr</div>
           <ResponsiveContainer width="100%" height={340}>
             <LineChart data={timeseries} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" />
@@ -157,7 +157,7 @@ export default function SwestrSection() {
       {subTab === "manad" && (
         <div className="chart-card">
           <div className="chart-card-title">
-            SWESTR senaste 30 dagarna
+            Swestr senaste 30 dagarna
           </div>
           <ResponsiveContainer width="100%" height={320}>
             <LineChart data={monthly} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
@@ -187,7 +187,7 @@ export default function SwestrSection() {
             </LineChart>
           </ResponsiveContainer>
           <div className="chart-note">
-            Percentillinjerna visar spridningen mellan nedre/övre trimningsgräns och SWESTR-noteringen per dag. <br />
+            Percentillinjerna visar spridningen mellan nedre/övre trimningsgräns och Swestr-noteringen per dag. <br />
             Källa: Riksbanken.
           </div>
         </div>
@@ -216,7 +216,7 @@ export default function SwestrSection() {
             </LineChart>
           </ResponsiveContainer>
           <div className="chart-note">
-            Positiva värden innebär att SWESTR noterar över styrräntan. <br />
+            Positiva värden innebär att Swestr noterar över styrräntan. <br />
             Källa: Riksbanken.
           </div>
         </div>

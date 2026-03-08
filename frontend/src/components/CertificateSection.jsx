@@ -37,7 +37,7 @@ export default function CertificateSection() {
 
   const chartData = timeseries.map((d) => ({
     date: d.date,
-    "Tilldelad volym": d.tilldelad_volym,
+    "Riksbankscertifikat": d.tilldelad_volym,
     "Reserver": d.aterstaende,
     "Räntefri inlåning": d.rantefri_inlaning,
     "Finjusterade transaktioner": d.finjusterade,
@@ -60,7 +60,7 @@ export default function CertificateSection() {
 
       <div className="chart-card">
         <div className="chart-card-head">
-          <div className="chart-card-title">Banksystemets likviditetsställning - fördelning mellan penningpolitiska instrument</div>
+          <div className="chart-card-title">Banksystemets likviditetsställning</div>
           <a className="export-btn" href="./data/riksbankscertifikat.csv" download="riksbankscertifikat.csv">
             Exportera CSV
           </a>
@@ -78,7 +78,7 @@ export default function CertificateSection() {
             />
             <Tooltip content={<ChartTooltip />} />
             <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
-            <Bar dataKey="Tilldelad volym" stackId="stack" fill="#0071B9" fillOpacity={0.85} />
+            <Bar dataKey="Riksbankscertifikat" stackId="stack" fill="#0071B9" fillOpacity={0.85} />
             <Bar dataKey="Reserver" stackId="stack" fill="#B91E2B" fillOpacity={0.85} />
             <Bar dataKey="Finjusterade transaktioner" stackId="stack" fill="#2D7D4F" fillOpacity={0.85} />
             <Bar dataKey="Räntefri inlåning" stackId="stack" fill="#D4880A" fillOpacity={0.85} radius={[3, 3, 0, 0]} />

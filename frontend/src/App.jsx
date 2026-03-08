@@ -80,7 +80,7 @@ export default function App() {
                 </div>
               </div>
               <div className="header-stat">
-                <div className="header-stat-label">Senast uppdaterat</div>
+                <div className="header-stat-label">Senaste affärsdag</div>
                 <div className="header-stat-value">{formatDate(lastDate)}</div>
               </div>
             </div>

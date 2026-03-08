@@ -40,7 +40,7 @@
     },
     {
       "id": "swestr-intro",
-      "title": "SWESTR – Den nya referensräntan",
+      "title": "Swestr – Den nya referensräntan",
       "ingress": "Hur och varför Riksbanken utvecklade en transaktionsbaserad referensränta som komplement till Stibor.",
       "body": [
         "Referensräntor utgör en central infrastrukturkomponent i det finansiella systemet genom att fungera som riktmärke vid prissättning av finansiella kontrakt, däribland lån med rörlig ränta, derivat och obligationer med rörlig kupong. Under närmare fyra decennier har så kallade interbankräntor (IBOR) fyllt denna funktion. I svenska kronor har Stibor (Stockholm Interbank Offered Rate) varit den dominerande referensräntan.",
