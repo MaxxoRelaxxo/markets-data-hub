@@ -1,17 +1,9 @@
 {
   "fordjupningar": [
     {
-      "id": "swestr-intro",
-      "title": "SWESTR – Den nya referensräntan",
-      "ingress": "[Ingress – fylls i]",
-      "body": [
-        "[Brödtext – fylls i]"
-      ]
-    },
-    {
-      "id": "riksbankscert",
+      "id": "styrsystem",
       "title": "Riksbankens penningpolitiska styrsystem",
-      "ingress": "En historisk överblick över Riksbankens räntestyrningssystem 1994–2022 – från räntetrappan via räntekorridoren till dagens smala korridor.",
+      "ingress": "En historisk överblick över Riksbankens räntestyrningssystem 1994–2022.",
       "body": [
         "Riksbankens räntestyrningssystem 1994–2022",
         "Bakgrund: Varför ett nytt system 1994?",
@@ -35,8 +27,16 @@
       ]
     },
     {
-      "id": "statsobligationer",
-      "title": "Riksbankens försäljning av statsobligationer",
+      "id": "typer-av-styrsystem",
+      "title": "Huvudtyper av styrsystem",
+      "ingress": "[Ingress – fylls i]",
+      "body": [
+        "[Brödtext – fylls i]"
+      ]
+    },
+    {
+      "id": "swestr-intro",
+      "title": "SWESTR – Den nya referensräntan",
       "ingress": "[Ingress – fylls i]",
       "body": [
         "[Brödtext – fylls i]"
@@ -45,21 +45,15 @@
   ],
   "artiklar": [
     {
-      "title": "SWESTR – Riksbankens officiella sida",
-      "url": "https://www.riksbank.se/sv/statistik/swestr/",
-      "description": "Officiell information om SWESTR, beräkningsmetodik och dagliga noteringar.",
+      "title": "Hur genomförs penningpolitik i praktiken?",
+      "url": "https://www.riksbank.se/globalassets/media/rapporter/pov/artiklar/svenska/2023/231219/2023_2-hur-genomfors-penningpolitiken-i-praktiken.pdf",
+      "description": "Artikeln ger en bred bild av centralbankens uppgifter och verktygslåda.",
       "kategori": "Riksbanken"
     },
     {
-      "title": "Riksbankens marknadsoperationer",
-      "url": "https://www.riksbank.se/sv/penningpolitik/penningpolitiska-instrument/",
-      "description": "Förklarar de penningpolitiska instrumenten inklusive certifikat och finjusterande transaktioner.",
-      "kategori": "Riksbanken"
-    },
-    {
-      "title": "Försäljning av statsobligationer",
-      "url": "https://www.riksbank.se/sv/penningpolitik/penningpolitiska-instrument/forsaljning-av-statsobligationer/",
-      "description": "Riksbankens sida om obligationsförsäljningen med auktionsschema och resultat.",
+      "title": "Riksbankens räntestyrningssystem 1885–2018",
+      "url": "https://www.riksbank.se/globalassets/media/rapporter/pov/artiklar/svenska/2018/180917/pv-2018_2-riksbankens-rantestyrningssystem-1885-2018.pdf",
+      "description": "En studie i Riksbankens system för att styra ränteläget i ekonomin med olika sorters penningpolitiska instrument har förändrats över tiden.",
       "kategori": "Riksbanken"
     },
     {
