@@ -146,7 +146,13 @@ def build_cert():
         }
         for r in timeseries
     ]
-    cert_graph_df = pl.DataFrame(cert_graph_rows)
+    cert_graph_df = pl.DataFrame(
+        cert_graph_rows,
+        schema_overrides={
+            "Räntefri inlåning (mdkr)": pl.Float64,
+            "Finjusterade transaktioner (mdkr)": pl.Float64,
+        },
+    )
     _dump_csv(
         cert_graph_df,
         "riksbankscertifikat_graf.csv",
