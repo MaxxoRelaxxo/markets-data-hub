@@ -139,7 +139,12 @@ def _(mo):
 
 
 @app.cell
-def _(pl, rb_cert):
+def _(Path, date, pl, rb_cert):
+    _data_dir = (
+        Path("src/markets_data_hub/data")
+        if Path("src/markets_data_hub/data").exists()
+        else Path("markets_data_hub/data")
+    )
     df_cert = (
         pl.read_parquet(rb_cert)
         .sort("Anbudsdag")
@@ -149,9 +154,30 @@ def _(pl, rb_cert):
             (pl.col("Tilldelad_volym") - pl.col("Tilldelad_volym").shift(1)).round(1).alias("Delta_Tilldelad_volym"),
             (pl.col("Antal_bud") - pl.col("Antal_bud").shift(1)).round(1).alias("Delta_Antal_bud"),
         )
-        .with_columns(
-            (pl.col("Reserver") - pl.col("Reserver").shift(1)).alias("Delta_Reserver")
+    )
+
+    # Replace reserves with Reserver.xlsx data between 2018-12-18 and 2023-02-07
+    _reserver_path = _data_dir / "Reserver.xlsx"
+    if _reserver_path.exists():
+        _df_reserver = (
+            pl.read_excel(str(_reserver_path))
+            .rename({"Datum": "Anbudsdag", "Reserver": "Reserver_xlsx"})
+            .sort("Anbudsdag")
         )
+        _res_start = date(2018, 12, 18)
+        _res_end = date(2023, 2, 7)
+        df_cert = df_cert.join_asof(_df_reserver, on="Anbudsdag", strategy="nearest")
+        df_cert = df_cert.with_columns(
+            pl.when(
+                (pl.col("Anbudsdag") >= _res_start) & (pl.col("Anbudsdag") <= _res_end)
+            )
+            .then(pl.col("Reserver_xlsx").round(1))
+            .otherwise(pl.col("Reserver"))
+            .alias("Reserver")
+        ).drop("Reserver_xlsx")
+
+    df_cert = df_cert.with_columns(
+        (pl.col("Reserver") - pl.col("Reserver").shift(1)).alias("Delta_Reserver")
     )
     return (df_cert,)
 

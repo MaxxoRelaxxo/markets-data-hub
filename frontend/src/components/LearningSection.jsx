@@ -19,7 +19,7 @@ export default function LearningSection() {
       <div className="section-header">
         <div className="section-accent" />
         <h2 className="section-title">Fördjupning</h2>
-        <p className="section-sub">Bakgrund och förklaringar till marknaderna</p>
+        <p className="section-sub">Kort intro till penningmarknad</p>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 32 }}>
@@ -57,9 +57,9 @@ export default function LearningSection() {
             {open[item.id] && (
               <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
                 {item.body.map((para, i) => (
-                  <p key={i} style={{ fontSize: 14, lineHeight: 1.65, color: "var(--text)", margin: "0 0 10px" }}>
-                    {para}
-                  </p>
+                  <p key={i} style={{ fontSize: 14, lineHeight: 1.65, color: "var(--text)", margin: "0 0 10px" }}
+                    dangerouslySetInnerHTML={{ __html: para }}
+                  />
                 ))}
               </div>
             )}

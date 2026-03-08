@@ -37,7 +37,7 @@ export default function CertificateSection() {
 
   const chartData = timeseries.map((d) => ({
     date: d.date,
-    "Tilldelad volym": d.tilldelad_volym,
+    "Riksbankscertifikat": d.tilldelad_volym,
     "Reserver": d.aterstaende,
     "Räntefri inlåning": d.rantefri_inlaning,
     "Finjusterade transaktioner": d.finjusterade,
@@ -60,7 +60,7 @@ export default function CertificateSection() {
 
       <div className="chart-card">
         <div className="chart-card-head">
-          <div className="chart-card-title">Banksystemets likviditetsställning - fördelning mellan penningpolitiska instrument</div>
+          <div className="chart-card-title">Banksystemets likviditetsställning</div>
           <a className="export-btn" href="./data/riksbankscertifikat.csv" download="riksbankscertifikat.csv">
             Exportera CSV
           </a>
@@ -78,34 +78,34 @@ export default function CertificateSection() {
             />
             <Tooltip content={<ChartTooltip />} />
             <Legend wrapperStyle={{ fontSize: 12, paddingTop: 12 }} />
-            <Bar dataKey="Tilldelad volym" stackId="stack" fill="#0071B9" fillOpacity={0.85} />
+            <Bar dataKey="Riksbankscertifikat" stackId="stack" fill="#0071B9" fillOpacity={0.85} />
             <Bar dataKey="Reserver" stackId="stack" fill="#B91E2B" fillOpacity={0.85} />
             <Bar dataKey="Finjusterade transaktioner" stackId="stack" fill="#2D7D4F" fillOpacity={0.85} />
             <Bar dataKey="Räntefri inlåning" stackId="stack" fill="#D4880A" fillOpacity={0.85} radius={[3, 3, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
         <div className="chart-note">
-          Grafen omfattar ej återköp av riksbankscertifikat. <br />
+          Anmärkning: Grafen omfattar ej återköp av riksbankscertifikat, men kommer att tillgängliggöras så snart som möjligt.<br />
+          Observera att den räntefria inlåningen i dagsläget saknar penningpolitiskt syfte och är inte ett penningpolitiskt instrument.<br />
+          Den räntefria inlåningen påverkar dock antalet tillgängliga reserver eftersom pengarna placeras på ett räntefritt konto hos Riksbanken <br />
+          i syfte till att minska Riksbankens räntekostnader, vilket bidrar till en bättre intjäning för Riksbanken.<br />
+          <br />
           Källa: Riksbanken.
         </div>
 
-        <div className="info-box">
-          <div className="info-box-title">Om Riksbankscertifikat</div>
-          <p>
-            När banksystemet har ett likviditetsöverskott gentemot Riksbanken drar Riksbanken in likviditet 
-            genom att emittera riksbankscertifikat till en ränta som motsvarar styrräntan.
-          </p>
-          <p>
-            Riksbankscertifikat är värdepapper som ges ut av Riksbanken. 
-            Certifikaten har en kort löptid, vanligen sju dagar, och emitteras en gång i veckan, normalt på tisdagar.
-          </p>
-          <p>
-            När de penningpolitiska motparterna placerar i riksbankscertifikat, lånar Riksbanken likviditet från banksystemet 
-            till en ränta som motsvarar styrräntan. Vid varje emissionstillfälle erbjuder Riksbanken normalt en volym certifikat 
-            som motsvarar banksystemets lägsta prognosticerade likviditetsöverskott under certifikatens löptid. 
-            För att underlätta bankernas likviditetshantering är riksbankscertifikaten återförsäljningsbara.
-          </p>
-        </div>
+      </div>
+
+      <div className="info-box">
+        <div className="info-box-title">Om riksbankscertifikat</div>
+        <p>
+          När banksystemet har ett likviditetsöverskott gentemot Riksbanken drar Riksbanken in likviditet genom att emittera riksbankscertifikat till en ränta som motsvarar styrräntan.
+        </p>
+        <p>
+          Riksbankscertifikat är värdepapper som ges ut av Riksbanken. Certifikaten har en kort löptid, vanligen sju dagar, och emitteras en gång i veckan, normalt på tisdagar.
+        </p>
+        <p>
+          När de penningpolitiska motparterna placerar i riksbankscertifikat, lånar Riksbanken likviditet från banksystemet till en ränta som motsvarar styrräntan. Vid varje emissionstillfälle erbjuder Riksbanken normalt en volym certifikat som motsvarar banksystemets lägsta prognosticerade likviditetsöverskott under certifikatens löptid. För att underlätta bankernas likviditetshantering är riksbankscertifikaten återförsäljningsbara.
+        </p>
       </div>
     </div>
   );
