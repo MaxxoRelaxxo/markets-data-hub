@@ -54,11 +54,32 @@ def build_cert():
             .alias("delta_tilldelad"),
             (pl.col("Antal_bud") - pl.col("Antal_bud").shift(1)).alias("delta_antal_bud"),
         )
-        .with_columns(
-            (pl.col("Aterstaende") - pl.col("Aterstaende").shift(1))
-            .round(1)
-            .alias("delta_aterstaende"),
+    )
+
+    # Replace reserves with Reserver.xlsx data between 2018-12-18 and 2023-02-07
+    reserver_path = DATA_DIR / "Reserver.xlsx"
+    if reserver_path.exists():
+        df_reserver = (
+            pl.read_excel(reserver_path)
+            .rename({"Datum": "Anbudsdag", "Reserver": "Reserver_xlsx"})
+            .sort("Anbudsdag")
         )
+        res_start = date(2018, 12, 18)
+        res_end = date(2023, 2, 7)
+        df = df.join_asof(df_reserver, on="Anbudsdag", strategy="nearest")
+        df = df.with_columns(
+            pl.when(
+                (pl.col("Anbudsdag") >= res_start) & (pl.col("Anbudsdag") <= res_end)
+            )
+            .then(pl.col("Reserver_xlsx").round(1))
+            .otherwise(pl.col("Aterstaende"))
+            .alias("Aterstaende")
+        ).drop("Reserver_xlsx")
+
+    df = df.with_columns(
+        (pl.col("Aterstaende") - pl.col("Aterstaende").shift(1))
+        .round(1)
+        .alias("delta_aterstaende"),
     )
 
     # Read finjusterade transaktioner and prepare for joining
