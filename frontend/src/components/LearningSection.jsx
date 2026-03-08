@@ -19,7 +19,7 @@ export default function LearningSection() {
       <div className="section-header">
         <div className="section-accent" />
         <h2 className="section-title">Fördjupning</h2>
-        <p className="section-sub">Bakgrund och förklaringar till marknaderna</p>
+        <p className="section-sub">Kort intro till penningmarknad</p>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 32 }}>

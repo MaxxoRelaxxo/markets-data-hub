@@ -85,7 +85,11 @@ export default function CertificateSection() {
           </BarChart>
         </ResponsiveContainer>
         <div className="chart-note">
-          Grafen omfattar ej återköp av riksbankscertifikat. <br />
+          Anmärkning: Grafen omfattar ej återköp av riksbankscertifikat, men kommer att tillgängliggöras så snart som möjligt.<br />
+          Observera att den räntefria inlåningen i dagsläget saknar penningpolitiskt syfte och är inte ett penningpolitiskt instrument.<br />
+          Den räntefria inlåningen påverkar dock antalet tillgängliga reserver eftersom pengarna placeras på ett räntefritt konto hos Riksbanken <br />
+          i syfte till att minska Riksbankens räntekostnader, vilket bidrar till en bättre intjäning för Riksbanken.<br />
+          <br />
           Källa: Riksbanken.
         </div>
 
