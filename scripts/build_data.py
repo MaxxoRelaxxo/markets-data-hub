@@ -135,6 +135,24 @@ def build_cert():
 
     _dump({"latest": latest, "timeseries": timeseries}, "cert_data.json")
 
+    # Graph data export – the exact series shown in the chart
+    cert_graph_rows = [
+        {
+            "Datum": r["date"],
+            "Riksbankscertifikat (mdkr)": r["tilldelad_volym"],
+            "Reserver (mdkr)": r["aterstaende"],
+            "Räntefri inlåning (mdkr)": r["rantefri_inlaning"],
+            "Finjusterade transaktioner (mdkr)": r["finjusterade"],
+        }
+        for r in timeseries
+    ]
+    cert_graph_df = pl.DataFrame(cert_graph_rows)
+    _dump_csv(
+        cert_graph_df,
+        "riksbankscertifikat_graf.csv",
+        {c: c for c in cert_graph_df.columns},
+    )
+
     # Full raw export for CSV download – all scraped columns, clear Swedish labels
     cert_col_rename = {
         "Anbudsdag": "Anbudsdag",
@@ -210,6 +228,25 @@ def build_bonds():
         },
         "bonds_data.json",
     )
+
+    # Graph data export – the exact series shown in the chart (bid-to-cover per auction)
+    bonds_graph_col_rename = {
+        "Anbudsdag": "Datum",
+        "Lan": "Lån",
+        "bid_to_cover": "Bid-to-cover",
+        "Budvolym": "Budvolym (Mkr)",
+        "Tilldelad_volym": "Tilldelad volym (Mkr)",
+        "lopetid": "Löptid (år)",
+    }
+    for instrument, filename in [
+        ("SGB", "statsobligationer_sgb_graf.csv"),
+        ("SGB IL", "statsobligationer_sgb_il_graf.csv"),
+    ]:
+        _dump_csv(
+            df.filter(pl.col("Instrument/Marknad") == instrument),
+            filename,
+            bonds_graph_col_rename,
+        )
 
     # Full raw export for CSV download – all scraped columns, clear Swedish labels
     bonds_col_rename = {
