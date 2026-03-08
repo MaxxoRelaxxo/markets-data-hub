@@ -63,10 +63,10 @@ export default function CertificateSection() {
           <div className="chart-card-title">Banksystemets likviditetsställning</div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <a className="export-btn" href="./data/riksbankscertifikat_graf.csv" download="riksbankscertifikat_graf.csv">
-              Exportera grafdata CSV
+              Exportera likviditetsdata CSV
             </a>
             <a className="export-btn" href="./data/riksbankscertifikat.csv" download="riksbankscertifikat.csv">
-              Exportera CSV
+              Exportera auktionsdata CSV
             </a>
           </div>
         </div>
