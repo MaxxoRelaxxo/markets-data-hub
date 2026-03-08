@@ -102,6 +102,13 @@ export default function BondsSection() {
             </div>
             <a
               className="export-btn"
+              href={`./data/statsobligationer_${bondType}_graf.csv`}
+              download={`statsobligationer_${bondType}_graf.csv`}
+            >
+              Exportera grafdata CSV
+            </a>
+            <a
+              className="export-btn"
               href={`./data/statsobligationer_${bondType}.csv`}
               download={`statsobligationer_${bondType}.csv`}
             >
