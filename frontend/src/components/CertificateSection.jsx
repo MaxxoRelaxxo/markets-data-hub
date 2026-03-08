@@ -90,6 +90,19 @@ export default function CertificateSection() {
         </div>
 
       </div>
+
+      <div className="info-box">
+        <div className="info-box-title">Om riksbankscertifikat</div>
+        <p>
+          När banksystemet har ett likviditetsöverskott gentemot Riksbanken drar Riksbanken in likviditet genom att emittera riksbankscertifikat till en ränta som motsvarar styrräntan.
+        </p>
+        <p>
+          Riksbankscertifikat är värdepapper som ges ut av Riksbanken. Certifikaten har en kort löptid, vanligen sju dagar, och emitteras en gång i veckan, normalt på tisdagar.
+        </p>
+        <p>
+          När de penningpolitiska motparterna placerar i riksbankscertifikat, lånar Riksbanken likviditet från banksystemet till en ränta som motsvarar styrräntan. Vid varje emissionstillfälle erbjuder Riksbanken normalt en volym certifikat som motsvarar banksystemets lägsta prognosticerade likviditetsöverskott under certifikatens löptid. För att underlätta bankernas likviditetshantering är riksbankscertifikaten återförsäljningsbara.
+        </p>
+      </div>
     </div>
   );
 }

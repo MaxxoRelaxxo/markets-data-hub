@@ -221,6 +221,23 @@ export default function SwestrSection() {
           </div>
         </div>
       )}
+
+      <div className="info-box">
+        <div className="info-box-title">Om Swestr</div>
+        <p>
+          Swestr (Swedish krona Short Term Rate) är en transaktionsbaserad referensränta som Riksbanken beräknar utifrån transaktioner som leder till inlåning utan säkerhet i svenska kronor som genomförs på penningmarknaden från en bankdag till nästa.
+        </p>
+        <p>
+          Referensräntor används som ett gemensamt riktmärke, eller ett basvärde, vid prissättning av finansiella kontrakt som räntederivat, valutaderivat och räntebärande värdepapper. Referensräntor används även vid prissättning av lån med rörlig ränta, i Sverige främst vid lån till företag. Traditionellt har så kallade interbankräntor använts som referensvärden för dessa ändamål. Dessa räntor reflekterar enligt olika beräkningsmetoder de räntor som banker kräver av varandra för kortfristiga lån utan säkerheter, det vill säga kostnaden för att låna pengar av en annan bank. Interbankräntorna har vanligen beräknats delvis baserade på bankers bud eller bedömningar av en rimlig ränta för icke-säkerställd utlåning på den aktuella löptiden givet rådande marknadsläge. Dessa räntor bygger alltså inte endast direkt på faktiska transaktioner.
+        </p>
+        <p>
+          Under den globala finanskrisen 2008-2009 försämrades likviditeten i interbanklånemarknaden avsevärt. Detta bidrog till en osäkerhet om huruvida de traditionella referensräntorna verkligen speglade rådande marknadsförhållanden. Efter att Liborskandalen uppdagades att flera internationella banker, i syfte att gynna den egna banken eller enskilda anställda, hade manipulerat referensräntan Libor. Dessa faktorer ledde till ett minskat globalt förtroende för de existerande referensräntorna. Ett stort reformarbete påbörjades därför med syftet att stärka förtroendet och tillförlitligheten för referensräntor.
+        </p>
+        <p>
+          Swestr började användas som referensränta i finansiella kontrakt från och med värdedag 1 september 2021, det vill säga den notering som publicerades den 2 september 2021.
+        </p>
+        <p>Läs mer om <a href="https://www.riksbank.se/sv/statistik/swestr/" target="_blank" rel="noreferrer">Swestr</a> här.</p>
+      </div>
     </div>
   );
 }
