@@ -120,6 +120,18 @@ function HouseholdChart({ data }) {
       <div className="chart-note">
         Källa: Finansmarknadsstatistik SCB, Riksbanken
       </div>
+
+      <div className="info-box">
+        <div className="info-box-title">Datakällor</div>
+        <p>
+          Hämtas via API, se funktioner i GitHub repo.
+        </p>
+        <p>
+          <a href="https://www.scb.se/fm5001" target="_blank" rel="noreferrer">Finansmarknadsstatistik</a><br></br>
+          <a href="https://www.statistikdatabasen.scb.se/pxweb/sv/ssd/START__FM__FM5001/" target="_blank" rel="noreferrer">Finansmarknadsstatistik i Statistikdatabasen</a><br></br>
+          <a href="https://www.riksbank.se/sv/statistik/rantor-och-valutakurser/hamta-rantor-och-valutakurser-via-api/" target="_blank" rel="noreferrer">Hämta räntor och valutakurser via API</a><br></br>
+        </p>
+      </div>
     </div>
   );
 }
@@ -201,6 +213,17 @@ function NfcChart({ data }) {
       <div className="chart-note">
         Källa: KRITA SCB
       </div>
+
+      <div className="info-box">
+        <div className="info-box-title">Datakällor</div>
+        <p>
+          Hämtas via API, se funktioner i GitHub repo.
+        </p>
+        <p>
+          <a href="https://www.scb.se/hitta-statistik/statistik-efter-amne/finansmarknad/krediter-till-foretag/kreditdatabas-krita/" target="_blank" rel="noreferrer">Kreditdatabas (KRITA)</a><br></br>
+          <a href="https://www.statistikdatabasen.scb.se/pxweb/sv/ssd/START__FM__FM0002/KRITApubl1/" target="_blank" rel="noreferrer">Kreditdatabas (KRITA) i Statistikdatabasen</a><br></br>
+        </p>
+      </div>
     </div>
   );
 }
@@ -269,6 +292,17 @@ function BrfChart({ data }) {
       </ResponsiveContainer>
       <div className="chart-note">
         Källa: KRITA SCB
+      </div>
+      
+      <div className="info-box">
+        <div className="info-box-title">Datakällor</div>
+        <p>
+          Hämtas via API, se funktioner i GitHub repo.
+        </p>
+        <p>
+          <a href="https://www.scb.se/hitta-statistik/statistik-efter-amne/finansmarknad/krediter-till-foretag/kreditdatabas-krita/" target="_blank" rel="noreferrer">Kreditdatabas (KRITA)</a><br></br>
+          <a href="https://www.statistikdatabasen.scb.se/pxweb/sv/ssd/START__FM__FM0002/KRITApubl1/" target="_blank" rel="noreferrer">Kreditdatabas (KRITA) i Statistikdatabasen</a><br></br>
+        </p>
       </div>
     </div>
   );
