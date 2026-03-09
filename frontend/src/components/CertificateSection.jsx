@@ -112,6 +112,15 @@ export default function CertificateSection() {
           När de penningpolitiska motparterna placerar i riksbankscertifikat, lånar Riksbanken likviditet från banksystemet till en ränta som motsvarar styrräntan. Vid varje emissionstillfälle erbjuder Riksbanken normalt en volym certifikat som motsvarar banksystemets lägsta prognosticerade likviditetsöverskott under certifikatens löptid. För att underlätta bankernas likviditetshantering är riksbankscertifikaten återförsäljningsbara.
         </p>
       </div>
+
+      <div className="info-box">
+        <div className="info-box-title">Datakällor</div>
+        <p>
+          <a href="https://www.riksbank.se/sv/marknader/marknadsoperationer/riksbankscertifikat/auctions-of-riksbank-certificates/" target="_blank" rel="noreferrer">Auktionsresultat för Riksbankscertifikat</a><br></br>
+          <a href="https://www.riksbank.se/sv/marknader/balansrakningen/riksbankens-tillgangar-och-skulder/" target="_blank" rel="noreferrer">Riksbankens tillgångar och skulder</a><br></br>
+          <a href="https://www.riksbank.se/sv/marknader/rantefri-inlaning/" target="_blank" rel="noreferrer">Räntefri inlåning</a>
+        </p>
+      </div>
     </div>
   );
 }

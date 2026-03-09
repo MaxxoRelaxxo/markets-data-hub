@@ -173,6 +173,13 @@ export default function BondsSection() {
         </p>
         </div>
       </div>
+
+      <div className="info-box">
+        <div className="info-box-title">Datakällor</div>
+        <p>
+          <a href="https://www.riksbank.se/sv/marknader/marknadsoperationer/forsaljning-av-statsobligationer/auktionsresultat/" target="_blank" rel="noreferrer">Auktionsresultat för Riksbankens försäljning av Statsobligationer</a><br></br>
+        </p>
+      </div>
     </div>
   );
 }

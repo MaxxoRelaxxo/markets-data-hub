@@ -238,6 +238,17 @@ export default function SwestrSection() {
         </p>
         <p>Läs mer om <a href="https://www.riksbank.se/sv/statistik/swestr/" target="_blank" rel="noreferrer">Swestr</a> här.</p>
       </div>
+
+      <div className="info-box">
+        <div className="info-box-title">Datakällor</div>
+        <p>
+          Hämtas via API, se funktioner i GitHub repo.
+        </p>
+        <p>
+          <a href="https://www.riksbank.se/sv/statistik/swestr/hamta-swestr-via-api/" target="_blank" rel="noreferrer">Hämta Swestr via API</a><br></br>
+          <a href="https://www.riksbank.se/sv/statistik/rantor-och-valutakurser/hamta-rantor-och-valutakurser-via-api/" target="_blank" rel="noreferrer">Hämta räntor och valutakurser via API</a><br></br>
+        </p>
+      </div>
     </div>
   );
 }
