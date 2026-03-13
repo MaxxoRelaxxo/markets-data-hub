@@ -35,16 +35,16 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # ── Tooling ──────────────────────────────────────────────
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.10"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
         run: uv sync --no-dev
@@ -113,6 +113,8 @@ jobs:
 
       # ── Commit & push ───────────────────────────────────────
       - name: Commit and push updated data
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -120,6 +122,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No data changes to commit."
           else
-            git commit -m "chore: update market data $(date -u +%Y-%m-%d)"
-            git push
+            DATE=$(date -u +%Y-%m-%d)
+            git commit -m "chore: update market data ${DATE}"
+            git push origin HEAD:main
           fi
