@@ -25,7 +25,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 concurrency:
   group: "update-data"
@@ -124,19 +123,6 @@ jobs:
             echo "No data changes to commit."
           else
             DATE=$(date -u +%Y-%m-%d)
-            BRANCH="data/update-${DATE}"
-            git checkout -b "$BRANCH"
             git commit -m "chore: update market data ${DATE}"
-            git push -u origin "$BRANCH"
-            gh pr create \
-              --title "chore: update market data ${DATE}" \
-              --body "Automated market data update for ${DATE}." \
-              --base main \
-              --head "$BRANCH" \
-              --label "automated" 2>/dev/null || \
-            gh pr create \
-              --title "chore: update market data ${DATE}" \
-              --body "Automated market data update for ${DATE}." \
-              --base main \
-              --head "$BRANCH"
+            git push origin HEAD:main
           fi
