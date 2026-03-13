@@ -25,6 +25,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: "update-data"
@@ -113,6 +114,8 @@ jobs:
 
       # ── Commit & push ───────────────────────────────────────
       - name: Commit and push updated data
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -120,6 +123,20 @@ jobs:
           if git diff --cached --quiet; then
             echo "No data changes to commit."
           else
-            git commit -m "chore: update market data $(date -u +%Y-%m-%d)"
-            git push
+            DATE=$(date -u +%Y-%m-%d)
+            BRANCH="data/update-${DATE}"
+            git checkout -b "$BRANCH"
+            git commit -m "chore: update market data ${DATE}"
+            git push -u origin "$BRANCH"
+            gh pr create \
+              --title "chore: update market data ${DATE}" \
+              --body "Automated market data update for ${DATE}." \
+              --base main \
+              --head "$BRANCH" \
+              --label "automated" 2>/dev/null || \
+            gh pr create \
+              --title "chore: update market data ${DATE}" \
+              --body "Automated market data update for ${DATE}." \
+              --base main \
+              --head "$BRANCH"
           fi
