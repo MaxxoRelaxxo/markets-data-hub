@@ -1,6 +1,6 @@
 # Markets Data Hub
 
-Data pipeline that collects, validates, and visualizes Swedish financial market data. Built with [Dagster](https://dagster.io/) and hosted on Dagster Cloud Serverless. Includes a React frontend dashboard and a Marimo interactive notebook.
+Data pipeline that collects, validates, and visualizes Swedish financial market data. Built with [Dagster](https://dagster.io/). Includes a React frontend dashboard and a Marimo interactive notebook.
 
 ## Data sources and assets
 
@@ -175,13 +175,6 @@ tests/
   test_assets.py          # Unit tests for assets
   test_defs.py            # Tests for pipeline definitions
 ```
-
-## Deployment
-
-The project deploys automatically to [Dagster Cloud Serverless](https://dagster.io/cloud) via GitHub Actions:
-
-- **Push to main** -- production deploy (`deploy.yml`)
-- **Push to feature branch** -- branch deploy (`branch_deployments.yml`)
 
 ## TODO
 

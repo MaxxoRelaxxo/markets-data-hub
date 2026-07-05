@@ -26,7 +26,6 @@ def build_frontend(context: AssetExecutionContext) -> MaterializeResult:
     """Build frontend data files.
 
     Converts Parquet data to JSON so the React frontend can consume it.
-    The React build and GitHub Pages deploy are handled by GitHub Actions.
     """
     result = subprocess.run(
         [sys.executable, str(BUILD_SCRIPT)],

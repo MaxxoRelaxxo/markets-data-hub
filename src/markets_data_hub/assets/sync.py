@@ -1,4 +1,4 @@
-"""Sync Parquet data to GitHub so the Pages workflow can rebuild the frontend."""
+"""Sync Parquet data to the GitHub repository."""
 
 import base64
 from pathlib import Path
@@ -120,12 +120,11 @@ def sync_data_to_github(
     context: AssetExecutionContext,
     github_repo: GitHubRepoResource,
 ) -> MaterializeResult:
-    """Push Parquet files to GitHub, triggering the Pages deploy pipeline.
+    """Push Parquet files to the GitHub repository.
 
     This asset runs after data assets have been materialised.  It reads
     all Parquet files from the local data directory and commits them to
-    the repository via the GitHub API.  The push triggers the existing
-    ``pages.yml`` workflow which rebuilds and deploys the frontend.
+    the repository via the GitHub API.
     """
     files: dict[str, bytes] = {}
     for name in PARQUET_FILES:

@@ -99,7 +99,7 @@ def _nth_banking_day(year: int, month: int, n: int) -> date:
 # Jobs
 # ---------------------------------------------------------------------------
 
-# Each job fetches data AND syncs to GitHub so Pages rebuilds immediately.
+# Each job fetches data AND syncs the updated Parquet files to GitHub.
 
 daily_sync_job = define_asset_job(
     name="daily_sync_job",
@@ -172,7 +172,7 @@ def scb_data_schedule(context: ScheduleEvaluationContext):
         yield RunRequest()
 
 
-# Sync schedules – fetch data + push Parquet to GitHub → triggers Pages deploy
+# Sync schedules – fetch data + push Parquet to GitHub
 
 daily_sync_schedule = ScheduleDefinition(
     name="daily_sync",
