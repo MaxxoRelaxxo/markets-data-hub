@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Standalone data fetcher for CI.
+"""Standalone data fetcher.
 
 Fetches market data from Riksbank APIs, web scraping, and SCB,
-then writes Parquet files.  When these are committed and pushed to
-main the GitHub Pages workflow rebuilds the frontend automatically.
+then writes Parquet files.
 
 Usage:
     uv run python scripts/fetch_data.py --swestr --policy-rate

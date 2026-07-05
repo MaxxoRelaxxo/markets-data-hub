@@ -1,5 +1,0 @@
-locations:
-- code_source:
-    module_name: markets_data_hub.definitions
-  location_name: markets_data_hub
-  working_directory: ./src/
